@@ -1,20 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:smart_home_control/core/routes/app_routes.dart';
 
 void main() {
-  runApp(const MainApp());
+  runApp(MyApp());
 }
 
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
-
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: Text('Hello World!'),
-        ),
-      ),
+    return MaterialApp(
+      title: 'Smart Home Control',
+      onGenerateRoute: AppRoutes.generateRoute,
+      initialRoute: AppRoutes.home,
     );
   }
 }
