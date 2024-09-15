@@ -1,4 +1,5 @@
 // lib/core/widget/bottom_nav_bar.dart
+import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:smart_home_control/features/alerts/presentation/pages/alerts_page.dart';
 import 'package:smart_home_control/features/configuration/presentation/pages/configuration_page.dart';
@@ -37,40 +38,39 @@ class _BottomNavBarState extends State<BottomNavBar> {
         index: _selectedIndex,
         children: _pages,
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.devices),
-            label: 'Devices',
+      bottomNavigationBar: CurvedNavigationBar(
+        backgroundColor: Colors.transparent,
+        buttonBackgroundColor: Colors.green,
+        color: Colors.green,
+        animationDuration: const Duration(milliseconds: 300),
+        items: const <Widget>[
+          Icon(
+            Icons.devices,
+            size: 26,
+            color: Colors.white,
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.list),
-            label: 'Modes',
+          Icon(
+            Icons.list,
+            size: 26,
+            color: Colors.white,
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.dashboard),
-            label: 'Dashboard',
+          Icon(
+            Icons.dashboard,
+            size: 26,
+            color: Colors.white,
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.notifications),
-            label: 'Alerts',
+          Icon(
+            Icons.notifications,
+            size: 26,
+            color: Colors.white,
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Configuration',
+          Icon(
+            Icons.settings,
+            size: 26,
+            color: Colors.white,
           ),
         ],
-        currentIndex: _selectedIndex,
         onTap: _onItemTapped,
-        backgroundColor: Colors.blueGrey[800], // Cor de fundo personalizada
-        selectedItemColor: Colors.yellowAccent, // Cor do item selecionado
-        unselectedItemColor: Colors.white70, // Cor do item não selecionado
-        iconSize: 24.0, // Tamanho dos ícones
-        showSelectedLabels: true,
-        showUnselectedLabels: false,
-        selectedFontSize: 14.0, // Tamanho da fonte do rótulo selecionado
-        unselectedFontSize: 12.0, // Tamanho da fonte do rótulo não selecionado
-        type: BottomNavigationBarType.fixed,
       ),
     );
   }

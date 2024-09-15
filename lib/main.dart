@@ -12,18 +12,12 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       title: 'Smart Home Control',
       onGenerateRoute: AppRoutes.generateRoute,
       initialRoute: AppRoutes.home,
-      theme: ThemeData(
-        bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-          backgroundColor: Colors.blue, // Defina a cor de fundo aqui
-          selectedItemColor: Colors.white,
-          unselectedItemColor: Colors.grey,
-        ),
-      ),
-      home: const BottomNavBar(), // Defina o widget principal aqui
+      home: BottomNavBar(),
+      debugShowCheckedModeBanner: false
     );
   }
 }
