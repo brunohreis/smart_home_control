@@ -17,7 +17,7 @@ class _DevicesPageState extends State<DevicesPage> {
   void removeDevice(Device device) {
     setState(() {
       // Aqui vai a lógica de remoção do dispositivo no banco de dados
-      //_devices.remove(device); // Ao remover da lista, a tela é atualizada
+      _devices.remove(device); // Ao remover da lista, a tela é atualizada
     });
   }
 
@@ -97,8 +97,27 @@ class _DevicesPageState extends State<DevicesPage> {
                             icon: const Icon(Icons.delete),
                             color: Colors.white,
                             iconSize: 20,
-                            onPressed: () => removeDevice(device),
                             tooltip: "Excluir o dispositivo",
+                            onPressed: () => showDialog<String>(
+                              context: context,
+                              builder: (BuildContext context) => AlertDialog(
+                                title: const Text('Do you really want to delete the device?'),
+                                content: const Text('This action cannot be undone.'),
+                                actions: <Widget>[
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context, 'Cancel'),
+                                    child: const Text('Cancel'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context, 'Delete');
+                                      removeDevice(device);
+                                    },
+                                    child: const Text('Delete'),
+                                  ),
+                                ],
+                              )
+                            ),
                           ),
                         ),
                       ),
