@@ -39,6 +39,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
         children: _pages,
       ),
       bottomNavigationBar: CurvedNavigationBar(
+        index: _selectedIndex,
         backgroundColor: Colors.transparent,
         buttonBackgroundColor: Colors.green,
         color: Colors.green,
