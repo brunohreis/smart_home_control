@@ -43,6 +43,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
         buttonBackgroundColor: Colors.green,
         color: Colors.green,
         animationDuration: const Duration(milliseconds: 300),
+        index: _selectedIndex,
         items: const <Widget>[
           Icon(
             Icons.devices,
