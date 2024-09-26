@@ -14,6 +14,7 @@ class AppRoutes {
   static const String modes = '/modes';
   static const String alerts = '/alerts';
   static const String devices = '/devices';
+  static const String addNewDevice = 'devices/add_new_device';
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -28,6 +29,8 @@ class AppRoutes {
       case alerts:
         return MaterialPageRoute(builder: (_) => const AlertsPage());
       case devices:
+        return MaterialPageRoute(builder: (_) => const DevicesPage());
+      case addNewDevice:
         return MaterialPageRoute(builder: (_) => const DevicesPage());
       default:
         return MaterialPageRoute(builder: (_) => const BottomNavBar());
