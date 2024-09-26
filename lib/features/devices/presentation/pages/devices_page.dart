@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/routes/app_routes.dart';
+
 class DevicesPage extends StatefulWidget {
   const DevicesPage({super.key});
 
@@ -130,7 +132,9 @@ class _DevicesPageState extends State<DevicesPage> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => addDevice(),
+        onPressed: (){
+          Navigator.pushNamed(context, AppRoutes.addNewDevice);
+        },
         tooltip: "Adicionar um novo dispositivo",
         backgroundColor: Colors.green,
         child: const Icon(

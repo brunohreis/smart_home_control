@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:smart_home_control/features/devices/presentation/pages/devices_page.dart';
 
 class AddNewDevicePage extends StatefulWidget {
-  const AddNewDevicePage({super.key});
+  final List<Device> devices;
+
+  const AddNewDevicePage({super.key, required this.devices});
 
   @override
   State<AddNewDevicePage> createState() => _AddNewDevicePageState();
@@ -11,7 +13,8 @@ class AddNewDevicePage extends StatefulWidget {
 class _AddNewDevicePageState extends State<AddNewDevicePage> {
   final _formKey = GlobalKey<FormState>();
 
-  Widget build(BuildContext context, List<Device> devices) {
+  @override
+  Widget build(BuildContext context) {
 
     return Form(
       key: _formKey,
