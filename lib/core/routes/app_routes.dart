@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:smart_home_control/features/configuration/presentation/pages/configuration_page.dart';
 import 'package:smart_home_control/features/dashboard/presentation/pages/dashboard_page.dart';
 import 'package:smart_home_control/features/alerts/presentation/pages/alerts_page.dart';
+import 'package:smart_home_control/features/devices/presentation/pages/add_new_device_page.dart';
 import 'package:smart_home_control/features/devices/presentation/pages/devices_page.dart';
 import 'package:smart_home_control/features/modes/presentation/pages/modes_page.dart';
 import 'package:smart_home_control/core/widget/bottom_nav_bar.dart';
@@ -14,6 +15,7 @@ class AppRoutes {
   static const String modes = '/modes';
   static const String alerts = '/alerts';
   static const String devices = '/devices';
+  static const String addNewDevice = 'devices/add_new_device';
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -29,6 +31,8 @@ class AppRoutes {
         return MaterialPageRoute(builder: (_) => const AlertsPage());
       case devices:
         return MaterialPageRoute(builder: (_) => const DevicesPage());
+      case addNewDevice:
+        return MaterialPageRoute(builder: (_) => const AddNewDevicePage());
       default:
         return MaterialPageRoute(builder: (_) => const BottomNavBar());
     }
