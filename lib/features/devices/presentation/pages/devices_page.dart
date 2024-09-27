@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/routes/app_routes.dart';
+import 'add_new_device_page.dart';
 
 class DevicesPage extends StatefulWidget {
   const DevicesPage({super.key});
@@ -16,6 +16,10 @@ class _DevicesPageState extends State<DevicesPage> {
     Device("Sensor de fumaça", true)
   ];
 
+  void removeDeviceFromDataset(Device device){
+    // Aqui virá a lógica de remoção do dispositivo no banco de dados
+  }
+
   void removeDevice(Device device) {
     setState(() {
       // Aqui vai a lógica de remoção do dispositivo no banco de dados
@@ -23,11 +27,26 @@ class _DevicesPageState extends State<DevicesPage> {
     });
   }
 
-  void addDevice() {
-    setState(() {
-      // Aqui vai a lógica de inserção do dispositivo no banco de dados
-      // Adiciona novo dispositivo à lista e atualiza a tela
-    });
+  void addDeviceToDataset(Device device) {
+    // Aqui virá a lógica de inserção do dispositivo no banco de dados
+  }
+
+  Future<void> _addDevice() async {
+    // Navega para a AddNewDevicePage e aguarda o retorno de um novo dispositivo
+    final newDevice = await Navigator.push<Device>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AddNewDevicePage(),
+      ),
+    );
+
+    // Se o dispositivo retornado não for nulo, adiciona à lista de dispositivos da página
+    if (newDevice != null) {
+      addDeviceToDataset(newDevice);
+      setState(() {
+        _devices.add(newDevice);
+      });
+    }
   }
 
   @override
@@ -132,13 +151,7 @@ class _DevicesPageState extends State<DevicesPage> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: (){
-          Navigator.pushNamed(
-              context,
-              AppRoutes.addNewDevice,
-              arguments: _devices,
-          );
-        },
+        onPressed: _addDevice,
         tooltip: "Adicionar um novo dispositivo",
         backgroundColor: Colors.green,
         child: const Icon(
