@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:smart_home_control/features/dashboard/presentation/components/humidity_gauge/humidity_gauge.dart';
+import 'package:smart_home_control/features/dashboard/presentation/components/temperature_gauge/temperature_gauge.dart';
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key});
@@ -7,8 +9,47 @@ class DashboardPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Dashboard')),
-      body: const Center(
-        child: Text('Dashboard Page'),
+      body: const SingleChildScrollView(
+        padding: EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: SizedBox(
+                    height: 150, // Defina uma altura menor para reduzir o tamanho da linha
+                    child: TemperatureGauge(temperatureValue: 35),
+                  ),
+                ),
+                SizedBox(width: 10),
+                Expanded(
+                  child: SizedBox(
+                    height: 150, // A altura é aplicada para ambos os gráficos
+                    child: TemperatureGauge(temperatureValue: 18),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 10), // Espaçamento entre as linhas
+            Row(
+              children: [
+                Expanded(
+                  child: SizedBox(
+                    height: 150, // Ajuste a altura para a segunda linha também
+                    child: HumidityGauge(humidityValue: 60),
+                  ),
+                ),
+                SizedBox(width: 10),
+                Expanded(
+                  child: SizedBox(
+                    height: 150,
+                    child: HumidityGauge(humidityValue: 20),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
