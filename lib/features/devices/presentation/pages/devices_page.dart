@@ -88,7 +88,7 @@ class _DevicesPageState extends State<DevicesPage> {
 
                       // Espaçador para empurrar o botão "Excluir" para a direita
                       Padding(
-                        padding: EdgeInsets.only(
+                        padding: const EdgeInsets.only(
                           left: 20.0,
                           right: 1,
                         ),
@@ -133,7 +133,11 @@ class _DevicesPageState extends State<DevicesPage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: (){
-          Navigator.pushNamed(context, AppRoutes.addNewDevice);
+          Navigator.pushNamed(
+              context,
+              AppRoutes.addNewDevice,
+              arguments: _devices,
+          );
         },
         tooltip: "Adicionar um novo dispositivo",
         backgroundColor: Colors.green,
