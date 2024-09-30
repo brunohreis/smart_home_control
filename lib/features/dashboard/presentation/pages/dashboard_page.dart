@@ -1,10 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:smart_home_control/features/dashboard/presentation/components/boolean_device/boolean_device.dart';
-import 'package:smart_home_control/features/dashboard/presentation/components/humidity_gauge/humidity_gauge.dart';
-import 'package:smart_home_control/features/dashboard/presentation/components/temperature_gauge/temperature_gauge.dart';
+import '../../../devices/presentation/pages/devices_page.dart';
 
-class DashboardPage extends StatelessWidget {
+class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
+
+  @override
+  State<DashboardPage> createState() => _DashboardPageState();
+}
+
+class _DashboardPageState extends State<DashboardPage> {
+
+  final List<Device> _devices = [
+    Device(1, "Sensor de temperatura DHT11", true, 0),
+    Device(2, "Sensor de temperatura DHT11", true, 0),
+    Device(3, "Sensor de umidade DHT11", true, 1),
+    Device(4, "Sensor de umidade DHT11", true, 1),
+    Device(5, "Relé conectado ao ar-condicionado da sala", false, 2),
+    Device(6, "Relé conectado ao portão da garagem", false, 2),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -14,64 +27,50 @@ class DashboardPage extends StatelessWidget {
           Icons.dashboard,
           color: Colors.green,
         ),
-        title: const Text('Dashboard')
+        title: const Text('Dashboard'),
       ),
-      body: const SingleChildScrollView(
-        padding: EdgeInsets.all(8.0),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
-            Row(
-              children: [
-                Expanded(
-                  child: SizedBox(
-                    height: 150, // Defina uma altura menor para reduzir o tamanho da linha
-                    child: TemperatureGauge(temperatureValue: 35),
-                  ),
+            Expanded(
+              child: GridView.builder(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,  // Define que haverá duas colunas
+                  mainAxisSpacing: 10.0,  // Espaçamento vertical entre os itens
+                  crossAxisSpacing: 10.0,  // Espaçamento horizontal entre os itens
+                  childAspectRatio: 1.17,  // Proporção dos itens (pode ajustar conforme o design)
                 ),
-                SizedBox(width: 10),
-                Expanded(
-                  child: SizedBox(
-                    height: 150, // A altura é aplicada para ambos os gráficos
-                    child: TemperatureGauge(temperatureValue: 18),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 10), // Espaçamento entre as linhas
-            Row(
-              children: [
-                Expanded(
-                  child: SizedBox(
-                    height: 150, // Ajuste a altura para a segunda linha também
-                    child: HumidityGauge(humidityValue: 60),
-                  ),
-                ),
-                SizedBox(width: 10),
-                Expanded(
-                  child: SizedBox(
-                    height: 150,
-                    child: HumidityGauge(humidityValue: 20),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 10), // Espaçamento entre as linhas
-            Row(
-              children: [
-                Expanded(
-                  child: SizedBox(
-                    height: 150, // Ajuste a altura para a segunda linha também
-                    child: BooleanDevice(value: true),
-                  ),
-                ),
-                SizedBox(width: 10),
-                Expanded(
-                  child: SizedBox(
-                    height: 150,
-                    child: BooleanDevice(value: false),
-                  ),
-                ),
-              ],
+                itemCount: _devices.length,
+                itemBuilder: (context, index) {
+                  final device = _devices[index];
+                  return Card(
+                    color: Colors.white,
+                    elevation: 3,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Expanded(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              device.description,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20,
+                              ),
+                            ),
+                            device.getCorrespondingWidget(),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
             ),
           ],
         ),

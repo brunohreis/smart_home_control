@@ -20,47 +20,40 @@ class _BooleanDeviceState extends State<BooleanDevice> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        const Text(
-          'Garage',
-          style: TextStyle(
-            fontSize: 20.0,
-            fontWeight: FontWeight.bold,
-            color: Colors.blueGrey,
-          ),
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 10),
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Switch(
-                value: currentValue,
-                activeColor: Colors.green,
-                inactiveTrackColor: Colors.red,
-                onChanged: (bool newValue) {
-                  setState(() {
-                    currentValue = newValue;
-                  });
-                },
-              ),
-              Text(
-                currentValue ? 'Open' : 'Close',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: _getBoolColor(currentValue),
+    return SizedBox(
+      height: 70,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Switch(
+                  value: currentValue,
+                  activeColor: Colors.green,
+                  inactiveTrackColor: Colors.red,
+                  onChanged: (bool newValue) {
+                    setState(() {
+                      currentValue = newValue;
+                    });
+                  },
                 ),
-              ),
-            ],
+                Text(
+                  currentValue ? 'On' : 'Off',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: _getBoolColor(currentValue),
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 

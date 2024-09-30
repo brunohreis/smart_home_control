@@ -1,6 +1,39 @@
 import 'package:flutter/material.dart';
+import 'package:smart_home_control/features/dashboard/presentation/components/boolean_device/boolean_device.dart';
+import 'package:smart_home_control/features/dashboard/presentation/components/humidity_gauge/humidity_gauge.dart';
+import 'package:smart_home_control/features/dashboard/presentation/components/temperature_gauge/temperature_gauge.dart';
 
 import 'add_new_device_page.dart';
+
+class Device {
+  int id;
+  String description;
+  bool isSensor;
+  int typeIndex;
+  Device(this.id, this.description, this.isSensor, this.typeIndex);
+  Widget getCorrespondingWidget(){
+    switch (typeIndex){
+      case 0:
+        return TemperatureGauge(temperatureValue: getCurrentValue());
+      case 1:
+        return HumidityGauge(humidityValue: getCurrentValue());
+      default:
+        return BooleanDevice(value: getCurrentValue());
+    }
+  }
+  dynamic getCurrentValue(){
+    // Aqui virá a lógica de seleção do valor retornado pelo dispositivo no banco de dados
+    // O que está implementado atualmente só serve para fins de teste
+    switch (typeIndex){
+      case 0:
+        return 35.0;
+      case 1:
+        return 60.0;
+      default:
+        return true;
+    }
+  }
+}
 
 class DevicesPage extends StatefulWidget {
   const DevicesPage({super.key});
@@ -11,9 +44,12 @@ class DevicesPage extends StatefulWidget {
 
 class _DevicesPageState extends State<DevicesPage> {
   final List<Device> _devices = [
-    Device("Sensor de temperatura e umidade DHT11", true),
-    Device("Relé conectado ao ar-condicionado da sala", false),
-    Device("Sensor de fumaça", true)
+    Device(1, "Sensor de temperatura DHT11", true, 0),
+    Device(2, "Sensor de temperatura DHT11", true, 0),
+    Device(3, "Sensor de umidade DHT11", true, 1),
+    Device(4, "Sensor de umidade DHT11", true, 1),
+    Device(3, "Relé conectado ao ar-condicionado da sala", false, 2),
+    Device(4, "Relé conectado ao portão da garagem", false, 2)
   ];
 
   void removeDeviceFromDataset(Device device){
@@ -163,8 +199,4 @@ class _DevicesPageState extends State<DevicesPage> {
   }
 }
 
-class Device {
-  String description;
-  bool isSensor;
-  Device(this.description, this.isSensor);
-}
+

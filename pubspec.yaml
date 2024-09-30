@@ -12,13 +12,13 @@ dependencies:
 
   curved_navigation_bar: ^1.0.6
   flutter_native_splash: ^2.4.1
-  flutter_launcher_icons: "^0.13.1"
+  flutter_launcher_icons: ^0.14.1
   syncfusion_flutter_gauges: ^27.1.48
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^4.0.0
+  flutter_lints: ^5.0.0
 
 flutter:
   uses-material-design: true

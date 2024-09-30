@@ -10,7 +10,7 @@ class AddNewDevicePage extends StatefulWidget {
 
 class _AddNewDevicePageState extends State<AddNewDevicePage> {
   final _formKey = GlobalKey<FormState>();
-  Device newDevice = Device('', false);
+  Device newDevice = Device(10, '', false, 0);
 
   void _submitForm() {
     if (_formKey.currentState!.validate()) {

@@ -8,55 +8,50 @@ class HumidityGauge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        const Text(
-          'Humidity',
-          style: TextStyle(
-            fontSize: 20.0, 
-            fontWeight: FontWeight.bold,
-            color: Colors.blueGrey,
-          ),
-          textAlign: TextAlign.center,
-        ),
-        Text(
-          '${humidityValue.toStringAsFixed(1)}%',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: _getHumidityColor(humidityValue),
-          ),
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 10),
-        SfLinearGauge(
-          minimum: 0,
-          maximum: 100,
-          orientation: LinearGaugeOrientation.horizontal,
-          markerPointers: [
-            LinearShapePointer(
-              value: humidityValue,
-              shapeType: LinearShapePointerType.invertedTriangle,
-              color: Colors.blueGrey,
+    return SizedBox(
+      height: 125,
+      width: 200,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            '${humidityValue.toStringAsFixed(1)}%',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: _getHumidityColor(humidityValue),
             ),
-          ],
-          barPointers: [
-            LinearBarPointer(
-              value: humidityValue,
-              thickness: 5,
-              color: Colors.blueGrey,
-            ),
-          ],
-          axisLabelStyle: const TextStyle(
-            fontSize: 12,
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
+            textAlign: TextAlign.center,
           ),
-          majorTickStyle: const LinearTickStyle(length: 10),
-          minorTickStyle: const LinearTickStyle(length: 5),
-        ),
-      ],
+          const SizedBox(height: 10),
+          SfLinearGauge(
+            minimum: 0,
+            maximum: 100,
+            orientation: LinearGaugeOrientation.horizontal,
+            markerPointers: [
+              LinearShapePointer(
+                value: humidityValue,
+                shapeType: LinearShapePointerType.invertedTriangle,
+                color: Colors.blueGrey,
+              ),
+            ],
+            barPointers: [
+              LinearBarPointer(
+                value: humidityValue,
+                thickness: 5,
+                color: Colors.blueGrey,
+              ),
+            ],
+            axisLabelStyle: const TextStyle(
+              fontSize: 12,
+              color: Colors.black,
+              fontWeight: FontWeight.bold,
+            ),
+            majorTickStyle: const LinearTickStyle(length: 10),
+            minorTickStyle: const LinearTickStyle(length: 5),
+          ),
+        ],
+      ),
     );
   }
 
