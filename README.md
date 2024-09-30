@@ -1,3 +1,4 @@
+# Smart Home Control
 **Descrição Geral:**
 O **SmartHomeControl** é um aplicativo móvel projetado para controlar e monitorar sensores e atuadores conectados a um ESP32, utilizando comunicação via MQTT. O aplicativo oferece uma plataforma para gerenciamento completo da automação residencial, onde o usuário pode configurar dispositivos, monitorar o ambiente em tempo real, definir alertas e personalizar modos de operação, como "Férias", "Trabalho" e "Em Casa". A aplicação também inclui uma interface de login para garantir a segurança dos dados e das configurações.
 
