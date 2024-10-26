@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:smart_home_control/core/data/models/esp_model.dart';
+import 'package:smart_home_control/core/data/repositories/esp_repository.dart';
 import 'package:smart_home_control/features/configuration/presentation/pages/new_esp_page.dart';
 import 'package:smart_home_control/features/configuration/presentation/pages/user_guide_page.dart';
 
@@ -10,47 +12,53 @@ class ConfigurationPage extends StatefulWidget {
 }
 
 class _ConfigurationPageState extends State<ConfigurationPage> {
-  final List<ESP32> _espList = [
-    ESP32("00:1A:2B:3C:4D:5E"),
-    ESP32("AC:DE:48:00:11:22"),
-  ];
+  final EspRepository _espRepository = EspRepository();
+  List<EspModel> _espList = [];
 
-  void removeEspFromDataset(ESP32 esp) {
-    // Lógica de remoção do ESP
-  }
-
-  void removeEsp(ESP32 esp) {
+  void removeEsp(EspModel esp) {
     setState(() {
       _espList.remove(esp);
     });
   }
 
-  void addEspToDataset(ESP32 esp) {
-    // Lógica de adição de esp
+  void addEspToDataset(EspModel esp) {
+    setState(() {
+      _espList.add(esp);
+    });
+  }
+
+  Future<void> _loadEspList() async {
+    final espList = await _espRepository.getEspList();
+    setState(() {
+      _espList = espList;
+    });
   }
 
   Future<void> _addEsp() async {
-    final newEsp = await Navigator.push<ESP32>(
-        context,
-        MaterialPageRoute(
-          builder: (context) => NewEspPage(),
-        ));
+    final newEsp = await Navigator.push<EspModel>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => NewEspPage(),
+      )
+    );
 
     if (newEsp != null) {
+      await _espRepository.saveEsp(newEsp); // Salvar no repositório
       addEspToDataset(newEsp);
-      setState(() {
-        _espList.add(newEsp);
-      });
     }
   }
 
   void _navigateToUserGuide() {
     Navigator.push(
       context,
-      MaterialPageRoute(
-          builder: (context) =>
-              const UserGuidePage()), // Navegando para a tela do guia do usuário
+      MaterialPageRoute(builder: (context) => const UserGuidePage()), // Navegando para a tela do guia do usuário
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadEspList(); // Carregar a lista de ESPs quando a tela é inicializada
   }
 
   @override
@@ -83,7 +91,7 @@ class _ConfigurationPageState extends State<ConfigurationPage> {
               shrinkWrap: true,
               children: _espList.asMap().entries.map((entry) {
                 int index = entry.key; // Índice do ESP
-                ESP32 device = entry.value; // ESP32 correspondente
+                EspModel device = entry.value; // ESP32 correspondente
 
                 return Container(
                   margin: const EdgeInsets.symmetric(
@@ -114,12 +122,12 @@ class _ConfigurationPageState extends State<ConfigurationPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'ESP32 - ${index + 1}', // Use index + 1 para começar a contagem em 1
+                              device.name, // Use index + 1 para começar a contagem em 1
                               style: const TextStyle(
                                   fontWeight: FontWeight.bold, fontSize: 17.3),
                             ),
                             Text(
-                              device.macAddress,
+                              device.mac,
                               textAlign: TextAlign.justify,
                               style: const TextStyle(fontSize: 16),
                             ),

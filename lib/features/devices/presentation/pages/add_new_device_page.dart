@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:smart_home_control/features/devices/presentation/pages/devices_page.dart';
+import 'package:smart_home_control/core/data/models/device_model.dart';
+import 'package:smart_home_control/core/data/models/device_type.dart';
 
 class AddNewDevicePage extends StatefulWidget {
   const AddNewDevicePage({super.key});
@@ -10,7 +11,13 @@ class AddNewDevicePage extends StatefulWidget {
 
 class _AddNewDevicePageState extends State<AddNewDevicePage> {
   final _formKey = GlobalKey<FormState>();
-  Device newDevice = Device('', false);
+  late DeviceModel newDevice;
+
+  @override
+  void initState() {
+    super.initState();
+    newDevice = DeviceModel(description: '', type: DeviceType.sensor); // Inicializa com um tipo padrão
+  }
 
   void _submitForm() {
     if (_formKey.currentState!.validate()) {
@@ -22,7 +29,6 @@ class _AddNewDevicePageState extends State<AddNewDevicePage> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Adicionar Novo Dispositivo'),
@@ -72,26 +78,26 @@ class _AddNewDevicePageState extends State<AddNewDevicePage> {
               const SizedBox(height: 10.0),
               ListTile(
                 title: const Text('Sensor'),
-                leading: Radio<bool>(
+                leading: Radio<DeviceType>(
                   activeColor: Colors.green,
-                  value: true,
-                  groupValue: newDevice.isSensor,
-                  onChanged: (bool? value) {
+                  value: DeviceType.sensor,
+                  groupValue: newDevice.type,
+                  onChanged: (DeviceType? value) {
                     setState(() {
-                      newDevice.isSensor = value!;
+                      newDevice.type = value!;
                     });
                   },
                 ),
               ),
               ListTile(
                 title: const Text('Atuador'),
-                leading: Radio<bool>(
+                leading: Radio<DeviceType>(
                   activeColor: Colors.green,
-                  value: false,
-                  groupValue: newDevice.isSensor,
-                  onChanged: (bool? value) {
+                  value: DeviceType.actuator,
+                  groupValue: newDevice.type,
+                  onChanged: (DeviceType? value) {
                     setState(() {
-                      newDevice.isSensor = value!;
+                      newDevice.type = value!;
                     });
                   },
                 ),

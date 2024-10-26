@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:smart_home_control/core/data/models/esp_model.dart';
 
 class NewEspPage extends StatefulWidget {
   const NewEspPage({super.key});
@@ -9,7 +10,13 @@ class NewEspPage extends StatefulWidget {
 
 class _NewEspPageState extends State<NewEspPage> {
   final _formKey = GlobalKey<FormState>();
-  ESP32 newDevice = ESP32('');
+  late EspModel newDevice;
+
+  @override
+  void initState() {
+    super.initState();
+    newDevice = EspModel(mac: '', name: ''); // Inicializa newDevice aqui
+  }
 
   void _submitForm() {
     if (_formKey.currentState!.validate()) {
@@ -21,7 +28,6 @@ class _NewEspPageState extends State<NewEspPage> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Add new ESP32'),
@@ -37,6 +43,30 @@ class _NewEspPageState extends State<NewEspPage> {
                 padding: const EdgeInsets.all(20.0),
                 child: TextFormField(
                   decoration: const InputDecoration(
+                    labelText: 'Nome',
+                    labelStyle: TextStyle(color: Colors.green),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.green),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.green),
+                    ),
+                  ),
+                  onSaved: (value) {
+                    newDevice.name = value!;
+                  },
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Por favor, insira um nome';
+                    }
+                    return null;
+                  },
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: TextFormField(
+                  decoration: const InputDecoration(
                     labelText: 'MAC',
                     labelStyle: TextStyle(color: Colors.green),
                     focusedBorder: OutlineInputBorder(
@@ -47,7 +77,7 @@ class _NewEspPageState extends State<NewEspPage> {
                     ),
                   ),
                   onSaved: (value) {
-                    newDevice.macAddress = value!;
+                    newDevice.mac = value!;
                   },
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -57,44 +87,6 @@ class _NewEspPageState extends State<NewEspPage> {
                   },
                 ),
               ),
-              // const SizedBox(height: 10.0),
-              // const Padding(
-              //   padding: EdgeInsets.all(20.0),
-              //   child: Text(
-              //       "É um sensor ou um atuador?",
-              //       textAlign: TextAlign.start,
-              //       style: TextStyle(
-              //         fontSize: 22,
-              //       ),
-              //   ),
-              // ),
-              // const SizedBox(height: 10.0),
-              // ListTile(
-              //   title: const Text('Sensor'),
-              //   leading: Radio<bool>(
-              //     activeColor: Colors.green,
-              //     value: true,
-              //     groupValue: newDevice.isSensor,
-              //     onChanged: (bool? value) {
-              //       setState(() {
-              //         newDevice.isSensor = value!;
-              //       });
-              //     },
-              //   ),
-              // ),
-              // ListTile(
-              //   title: const Text('Atuador'),
-              //   leading: Radio<bool>(
-              //     activeColor: Colors.green,
-              //     value: false,
-              //     groupValue: newDevice.isSensor,
-              //     onChanged: (bool? value) {
-              //       setState(() {
-              //         newDevice.isSensor = value!;
-              //       });
-              //     },
-              //   ),
-              // ),
             ],
           ),
         ),
@@ -111,9 +103,4 @@ class _NewEspPageState extends State<NewEspPage> {
     );
   }
 
-}
-
-class ESP32 {
-  String macAddress;
-  ESP32(this.macAddress);
 }
