@@ -3,6 +3,9 @@ import 'package:smart_home_control/features/dashboard/presentation/components/bo
 import 'package:smart_home_control/features/dashboard/presentation/components/humidity_gauge/humidity_gauge.dart';
 import 'package:smart_home_control/features/dashboard/presentation/components/temperature_gauge/temperature_gauge.dart';
 
+import 'package:smart_home_control/core/data/models/device_model.dart';
+import 'package:smart_home_control/core/data/models/device_type.dart';
+import 'package:smart_home_control/core/data/repositories/device_repository.dart';
 import 'add_new_device_page.dart';
 
 class Device {
@@ -43,45 +46,43 @@ class DevicesPage extends StatefulWidget {
 }
 
 class _DevicesPageState extends State<DevicesPage> {
-  final List<Device> _devices = [
-    Device(1, "Sensor de temperatura DHT11", true, 0),
-    Device(2, "Sensor de temperatura DHT11", true, 0),
-    Device(3, "Sensor de umidade DHT11", true, 1),
-    Device(4, "Sensor de umidade DHT11", true, 1),
-    Device(3, "Relé conectado ao ar-condicionado da sala", false, 2),
-    Device(4, "Relé conectado ao portão da garagem", false, 2)
-  ];
+  late DeviceRepository _deviceRepository;
+  List<DeviceModel> _devices = [];
 
-  void removeDeviceFromDataset(Device device){
-    // Aqui virá a lógica de remoção do dispositivo no banco de dados
+  @override
+  void initState() {
+    super.initState();
+    _deviceRepository = DeviceRepository();
+    _loadDevices();
   }
 
-  void removeDevice(Device device) {
+  Future<void> _loadDevices() async { 
+    final devices = await _deviceRepository.getDeviceList();
     setState(() {
-      // Aqui vai a lógica de remoção do dispositivo no banco de dados
-      _devices.remove(device); // Ao remover da lista, a tela é atualizada
+      _devices = devices;
     });
   }
 
-  void addDeviceToDataset(Device device) {
-    // Aqui virá a lógica de inserção do dispositivo no banco de dados
+  void removeDevice(DeviceModel device) {
+    setState(() {
+      _devices.remove(device);
+    });
   }
 
   Future<void> _addDevice() async {
-    // Navega para a AddNewDevicePage e aguarda o retorno de um novo dispositivo
-    final newDevice = await Navigator.push<Device>(
+    final newDevice = await Navigator.push<DeviceModel>(
       context,
       MaterialPageRoute(
         builder: (context) => AddNewDevicePage(),
       ),
     );
 
-    // Se o dispositivo retornado não for nulo, adiciona à lista de dispositivos da página
     if (newDevice != null) {
-      addDeviceToDataset(newDevice);
       setState(() {
         _devices.add(newDevice);
       });
+      // Adicione a lógica para salvar no repositório
+      await _deviceRepository.saveDevice(newDevice);
     }
   }
 
@@ -124,24 +125,21 @@ class _DevicesPageState extends State<DevicesPage> {
                     children: [
                       const Icon(Icons.device_hub, color: Colors.green),
                       const SizedBox(width: 12.5), // Espaçamento entre o ícone e os textos
-
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                                device.isSensor ? "Sensor" : "Atuador",
-                                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 17.3)),
+                              device.type == DeviceType.sensor ? "Sensor" : "Atuador",
+                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 17.3)),
 
                             Text(
-                                device.description,
-                                textAlign: TextAlign.justify,
-                                style: const TextStyle(fontSize: 16)),
+                              device.description,
+                              textAlign: TextAlign.justify,
+                              style: const TextStyle(fontSize: 16)),
                           ],
                         ),
                       ),
-
-                      // Espaçador para empurrar o botão "Excluir" para a direita
                       Padding(
                         padding: const EdgeInsets.only(
                           left: 20.0,
@@ -198,5 +196,3 @@ class _DevicesPageState extends State<DevicesPage> {
     );
   }
 }
-
-
