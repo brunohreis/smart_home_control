@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "66583068865",
+    "project_id": "smart-home-control-98900",
+    "storage_bucket": "smart-home-control-98900.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:66583068865:android:6031bcfed8c95e29d05440",
+        "android_client_info": {
+          "package_name": "com.smart_home_control.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCVLzLOz3XokRrIevcxps-A9W408Hxfg4U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
