@@ -8,8 +8,8 @@ class DatabaseOperations{
     this.db = FirebaseFirestore.instance;
   }
   Future<void> addEsp(EspModel esp) async {
-    final microcontroladores = FirebaseFirestore.instance.collection('esps');
-    await microcontroladores.doc(esp.id).set({
+    final esps = db.collection('esps');
+    await esps.doc(esp.id).set({
       'id': esp.id,
       'mac': esp.mac,
       'nome': esp.name,
@@ -33,8 +33,7 @@ class DatabaseOperations{
     for (var device in devices.docs) {
       await device.reference.delete();
     }
-
-    // Depois, a esp também é deletada
+    //Finalmente, a esp é deletada
     await esp.delete();
   }
   Future<void> addDevice(EspModel esp, DeviceModel device) async {
@@ -45,10 +44,23 @@ class DatabaseOperations{
 
     await dispositivos.doc(device.id).set({
       'id': device.id,
-      'descricao': device.description,
-      'éSensor': device.type,
-      'indiceTipo': device.,
+      'description': device.description,
+      'typeIndex': device.type,
     });
+  }
+  Future<List<DeviceModel>> getDevices(EspModel esp) async {
+    final querySnapshot = await db
+        .collection('esps')
+        .doc(esp.id)
+        .collection('devices')
+        .get();
+
+    List<Map<String, dynamic>> auxList = querySnapshot.docs.map((doc) => doc.data()).toList();
+    List<DeviceModel> devices = List.empty();
+    for(int i = 0; i < auxList.length; i++){
+      devices.add(DeviceModel.fromMap(auxList[i]));
+    }
+    return devices;
   }
 
 

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:smart_home_control/core/data/firebase/DatabaseOperations.dart';
+import 'package:smart_home_control/core/data/models/esp_model.dart';
 import 'package:smart_home_control/features/dashboard/presentation/components/boolean_device/boolean_device.dart';
 import 'package:smart_home_control/features/dashboard/presentation/components/humidity_gauge/humidity_gauge.dart';
 import 'package:smart_home_control/features/dashboard/presentation/components/temperature_gauge/temperature_gauge.dart';
@@ -59,7 +61,14 @@ class _DevicesPageState extends State<DevicesPage> {
   Future<void> _loadDevices() async { 
     final devices = await _deviceRepository.getDeviceList();
     setState(() {
-      _devices = devices;
+      //_devices = devices;
+      EspModel esp = EspModel(mac: "0", name: "myesp");
+      dynamic aux = DatabaseOperations().getDevices(esp);
+      List<DeviceModel> aux2 = List.empty();
+      for(int i = 0; i < aux.length; i++){
+        aux2.add(DeviceModel(description: aux[i].description, ));
+      }
+      _devices = aux2;
     });
   }
 
