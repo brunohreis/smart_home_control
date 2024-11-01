@@ -2,15 +2,15 @@ import 'package:smart_home_control/core/data/models/device_type.dart';
 import 'package:uuid/uuid.dart';
 
 class DeviceModel {
-  String id;
+  int id = 0;
   String description;
   DeviceType type; // Usando a enumeração
 
   DeviceModel({
-    String? id,
+    id,
     required this.description,
     required this.type,
-  }) : id = id ?? Uuid().v4();
+  });
 
   // Método para converter um objeto DeviceModel em um Map
   Map<String, dynamic> toMap() {

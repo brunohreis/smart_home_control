@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:smart_home_control/core/data/models/device_model.dart';
 import 'package:smart_home_control/core/data/models/esp_model.dart';
 import 'package:smart_home_control/core/data/repositories/esp_repository.dart';
+import 'package:smart_home_control/core/data/sqlite/sqlite.dart';
 import 'package:smart_home_control/features/configuration/presentation/pages/new_esp_page.dart';
 import 'package:smart_home_control/features/configuration/presentation/pages/user_guide_page.dart';
 
@@ -12,30 +14,31 @@ class ConfigurationPage extends StatefulWidget {
 }
 
 class _ConfigurationPageState extends State<ConfigurationPage> {
-  final EspRepository _espRepository = EspRepository();
+  //final EspRepository _espRepository = EspRepository();
   List<EspModel> _espList = [];
 
   void removeEsp(EspModel esp) {
+    SQLiteHelper.deleteEsp(esp.id); // deleta a esp do banco de dados
     setState(() {
-      _espList.remove(esp);
+      _espList.remove(esp); // remove a esp da lista que é usada para visualização
     });
   }
 
-  void addEspToDataset(EspModel esp) {
+  Future<void> _loadEspList() async {
+    //final espList = await _espRepository.getEspList();
+    setState(() {
+      _espList = SQLiteHelper.readAllEsps() as List<EspModel>;
+    });
+  }
+
+  void addEspToList(EspModel esp) {
     setState(() {
       _espList.add(esp);
     });
   }
 
-  Future<void> _loadEspList() async {
-    final espList = await _espRepository.getEspList();
-    setState(() {
-      _espList = espList;
-    });
-  }
-
   Future<void> _addEsp() async {
-    final newEsp = await Navigator.push<EspModel>(
+    var newEsp = await Navigator.push<EspModel>(
       context,
       MaterialPageRoute(
         builder: (context) => NewEspPage(),
@@ -43,8 +46,10 @@ class _ConfigurationPageState extends State<ConfigurationPage> {
     );
 
     if (newEsp != null) {
-      await _espRepository.saveEsp(newEsp); // Salvar no repositório
-      addEspToDataset(newEsp);
+      //await _espRepository.saveEsp(newEsp); // Salvar no repositório
+      int id = SQLiteHelper.createEsp(newEsp) as int; // insere no bd sqlite e recebe o id gerado
+      newEsp.id = id;
+      addEspToList(newEsp); // a esp é adicionada à lista usada para visualização
     }
   }
 

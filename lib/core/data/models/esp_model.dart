@@ -1,15 +1,15 @@
 import 'package:uuid/uuid.dart';
 
 class EspModel {
-  String id;
+  int id = 0;
   String mac;
   String name;
 
   EspModel({
-    String? id,
+    id,
     required this.mac,
     required this.name,
-  }) : id = id ?? Uuid().v4(); // Gera um UUID se id não for fornecido
+  }); // Gera um UUID se id não for fornecido
 
   // Método para converter um objeto EspModel em um Map
   Map<String, dynamic> toMap() {

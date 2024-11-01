@@ -61,14 +61,7 @@ class _DevicesPageState extends State<DevicesPage> {
   Future<void> _loadDevices() async { 
     final devices = await _deviceRepository.getDeviceList();
     setState(() {
-      //_devices = devices;
-      EspModel esp = EspModel(mac: "0", name: "myesp");
-      dynamic aux = DatabaseOperations().getDevices(esp);
-      List<DeviceModel> aux2 = List.empty();
-      for(int i = 0; i < aux.length; i++){
-        aux2.add(DeviceModel(description: aux[i].description, ));
-      }
-      _devices = aux2;
+      _devices = devices;
     });
   }
 
