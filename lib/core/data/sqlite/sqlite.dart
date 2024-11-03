@@ -1,6 +1,4 @@
-import 'dart:io';
-
-import 'package:flutter/foundation.dart';
+import 'dart:async';
 import 'package:smart_home_control/core/data/models/device_model.dart';
 import 'package:smart_home_control/core/data/models/esp_model.dart';
 import 'package:sqflite/sqflite.dart';
@@ -11,6 +9,7 @@ import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
 
 class SQLiteHelper{
   static Future<Database> getDatabase() async{
+    /*
     if (kIsWeb) {
       // Use web implementation on the web.
       databaseFactory = databaseFactoryFfiWeb;
@@ -22,27 +21,30 @@ class SQLiteHelper{
       }
     }
     databaseFactory = databaseFactoryFfi;
+    */
     final dbsPath = await getDatabasesPath();
-    final dbPath = join(dbsPath, 'banco.db');
+    final dbPath = join(dbsPath, 'my_app_db.db');
     final returnDb = await openDatabase(
       dbPath,
       version: 1,
       onCreate: (db, version) {
-        String query = "CREATE TABLE esps "
+        String query = "CREATE TABLE Esps "
             "(id INTEGER PRIMARY KEY AUTOINCREMENT, "
-            "name STRING, "
-            "mac STRING)"
-            "CREATE TABLE devices "
+            "name TEXT, "
+            "mac TEXT);"
+        ;
+        db.execute(query);
+        query = "CREATE TABLE Devices "
             "(id INTEGER PRIMARY KEY AUTOINCREMENT, "
-            "name STRING, "
-            "type_index INT"
-            "id_esp INT"
-            "FOREIGN KEY (esp_id) REFERENCES esps (id_esp)"
+            "name TEXT, "
+            "type_index INTEGER, "
+            "id_esp INTEGER, "
+            "FOREIGN KEY (id_esp) REFERENCES Esps (id));"
         ;
         db.execute(query);
       },
     );
-    print("db opened: " + returnDb.isOpen.toString());
+    //print("db opened: " + returnDb.isOpen.toString());
     return returnDb;
   }
   static Future<int> createEsp(EspModel esp) async {
@@ -51,14 +53,14 @@ class SQLiteHelper{
       'name': esp.name,
       'mac': esp.mac,
     };
-    int id = await db.insert("esps", data);
-    print("Esp salva com id: $id");
+    int id = await db.insert("Esps", data);
+    //print("Esp salva com id: $id");
     return id;
   }
   static Future<List<EspModel>> readAllEsps() async {
-    List<EspModel> esps = List.empty();
+    List<EspModel> esps = List.empty(growable: true);
     Database db = await getDatabase();
-    List<Map<String, dynamic>> espsAux = db.query("esps", columns: ["*"]) as List<Map<String, dynamic>>;
+    List<Map<String, dynamic>> espsAux = await db.query("Esps", columns: ["*"]);
     for(var esp in espsAux){
       esps.add(EspModel.fromMap(esp));
     }
@@ -66,16 +68,18 @@ class SQLiteHelper{
   }
   static Future<EspModel> readEsp(int id) async {
     Database db = await getDatabase();
-    var aux = db.query("esps", columns: ["*"], where: "id = ?", whereArgs: [id]) as List<Map<String, dynamic>>;
+    var aux = await db.query("Esps", columns: ["*"], where: "id = ?", whereArgs: [id]);
     return EspModel.fromMap(aux[0]);
   }
   static updateEsp(EspModel esp) async {
     Database db = await getDatabase();
-    db.update("esps", esp.toMap(), where: "where id = ?", whereArgs: [esp.id]);
+    int rows = await db.update("Esps", esp.toMap(), where: "id = ?", whereArgs: [esp.id]);
+    //print("Deleted $rows rows");
   }
   static deleteEsp(int id) async {
     Database db = await getDatabase();
-    db.delete("esps", where: "where id = ?", whereArgs: [id]);
+    int rows = await db.delete("Esps", where: "id = ?", whereArgs: [id]);
+    //print("Deleted $rows rows");
   }
 
 

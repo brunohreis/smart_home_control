@@ -9,7 +9,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:66583068865:android:6031bcfed8c95e29d05440",
         "android_client_info": {
-          "package_name": "com.smart_home_control.app"
+          "package_name": "com.example.smart_home_control"
         }
       },
       "oauth_client": [],

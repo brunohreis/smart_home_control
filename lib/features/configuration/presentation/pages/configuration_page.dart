@@ -17,17 +17,18 @@ class _ConfigurationPageState extends State<ConfigurationPage> {
   //final EspRepository _espRepository = EspRepository();
   List<EspModel> _espList = [];
 
-  void removeEsp(EspModel esp) {
-    SQLiteHelper.deleteEsp(esp.id); // deleta a esp do banco de dados
-    setState(() {
+  Future<void> removeEsp(EspModel esp) async {
+    await SQLiteHelper.deleteEsp(esp.id); // deleta a esp do banco de dados
+    setState((){
       _espList.remove(esp); // remove a esp da lista que é usada para visualização
     });
   }
 
   Future<void> _loadEspList() async {
     //final espList = await _espRepository.getEspList();
+    List<EspModel> aux = await SQLiteHelper.readAllEsps();
     setState(() {
-      _espList = SQLiteHelper.readAllEsps() as List<EspModel>;
+      _espList = aux;
     });
   }
 
@@ -47,8 +48,8 @@ class _ConfigurationPageState extends State<ConfigurationPage> {
 
     if (newEsp != null) {
       //await _espRepository.saveEsp(newEsp); // Salvar no repositório
-      int id = SQLiteHelper.createEsp(newEsp) as int; // insere no bd sqlite e recebe o id gerado
-      newEsp.id = id;
+      int id = await SQLiteHelper.createEsp(newEsp); // insere no bd sqlite e recebe o id gerado
+      newEsp.id = id; // o objeto esp passa a armazenar o seu id correspondente no banco de dados
       addEspToList(newEsp); // a esp é adicionada à lista usada para visualização
     }
   }
@@ -96,7 +97,7 @@ class _ConfigurationPageState extends State<ConfigurationPage> {
               shrinkWrap: true,
               children: _espList.asMap().entries.map((entry) {
                 int index = entry.key; // Índice do ESP
-                EspModel device = entry.value; // ESP32 correspondente
+                EspModel curEsp = entry.value; // ESP32 correspondente
 
                 return Container(
                   margin: const EdgeInsets.symmetric(
@@ -127,12 +128,12 @@ class _ConfigurationPageState extends State<ConfigurationPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              device.name, // Use index + 1 para começar a contagem em 1
+                              curEsp.name, // Use index + 1 para começar a contagem em 1
                               style: const TextStyle(
                                   fontWeight: FontWeight.bold, fontSize: 17.3),
                             ),
                             Text(
-                              device.mac,
+                              curEsp.mac,
                               textAlign: TextAlign.justify,
                               style: const TextStyle(fontSize: 16),
                             ),
@@ -165,7 +166,7 @@ class _ConfigurationPageState extends State<ConfigurationPage> {
                                   TextButton(
                                     onPressed: () {
                                       Navigator.pop(context, 'Delete');
-                                      removeEsp(device);
+                                      removeEsp(curEsp);
                                     },
                                     child: const Text('Delete'),
                                   ),

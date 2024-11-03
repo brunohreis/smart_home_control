@@ -15,7 +15,7 @@ class _NewEspPageState extends State<NewEspPage> {
   @override
   void initState() {
     super.initState();
-    newDevice = EspModel(mac: '', name: ''); // Inicializa newDevice aqui
+    newDevice = EspModel(id: 0, mac: '', name: ''); // Inicializa newDevice aqui
   }
 
   void _submitForm() {
