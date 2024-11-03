@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:smart_home_control/core/data/firebase/DatabaseOperations.dart';
 import 'package:smart_home_control/core/data/models/esp_model.dart';
 import 'package:smart_home_control/features/dashboard/presentation/components/boolean_device/boolean_device.dart';
 import 'package:smart_home_control/features/dashboard/presentation/components/humidity_gauge/humidity_gauge.dart';
@@ -8,37 +7,8 @@ import 'package:smart_home_control/features/dashboard/presentation/components/te
 import 'package:smart_home_control/core/data/models/device_model.dart';
 import 'package:smart_home_control/core/data/models/device_type.dart';
 import 'package:smart_home_control/core/data/repositories/device_repository.dart';
+import '../../../../core/data/sqlite/sqlite.dart';
 import 'add_new_device_page.dart';
-
-class Device {
-  int id;
-  String description;
-  bool isSensor;
-  int typeIndex;
-  Device(this.id, this.description, this.isSensor, this.typeIndex);
-  Widget getCorrespondingWidget(){
-    switch (typeIndex){
-      case 0:
-        return TemperatureGauge(temperatureValue: getCurrentValue());
-      case 1:
-        return HumidityGauge(humidityValue: getCurrentValue());
-      default:
-        return BooleanDevice(value: getCurrentValue());
-    }
-  }
-  dynamic getCurrentValue(){
-    // Aqui virá a lógica de seleção do valor retornado pelo dispositivo no banco de dados
-    // O que está implementado atualmente só serve para fins de teste
-    switch (typeIndex){
-      case 0:
-        return 35.0;
-      case 1:
-        return 60.0;
-      default:
-        return true;
-    }
-  }
-}
 
 class DevicesPage extends StatefulWidget {
   const DevicesPage({super.key});
@@ -48,27 +18,37 @@ class DevicesPage extends StatefulWidget {
 }
 
 class _DevicesPageState extends State<DevicesPage> {
-  late DeviceRepository _deviceRepository;
+  //late DeviceRepository _deviceRepository;
   List<DeviceModel> _devices = [];
 
   @override
   void initState() {
     super.initState();
-    _deviceRepository = DeviceRepository();
-    _loadDevices();
+    //_deviceRepository = DeviceRepository();
+    _loadDevicesList();
   }
 
-  Future<void> _loadDevices() async { 
-    final devices = await _deviceRepository.getDeviceList();
+  Future<void> _loadDevicesList() async {
+    //final devices = await _deviceRepository.getDeviceList();
+    //TODO: Implementar uma seleção da esp a ter os seus dispositivos carregados nessa página (essa seleção ocorrerá na página configuration_page), que terá o seu id passado por parâmetro na função readAllDevices
+    List<DeviceModel> aux = await SQLiteHelper.readAllDevices(1);
+
+    // a lista de dispositivos é ordenada de acordo com o tipo de dispositivo, para que visualizações parecidas fiquem pŕoximas
+    aux.sort();
+
     setState(() {
-      _devices = devices;
+      _devices = aux;
     });
   }
 
-  void removeDevice(DeviceModel device) {
-    setState(() {
-      _devices.remove(device);
-    });
+  void removeDevice(DeviceModel device) async {
+    // deleta o dispositivo do banco de dados
+    int rowsDeleted = await SQLiteHelper.deleteDevice(device.id);
+    if(rowsDeleted != 0){
+      setState(() {
+        _devices.remove(device);
+      });
+    }
   }
 
   Future<void> _addDevice() async {
@@ -80,11 +60,13 @@ class _DevicesPageState extends State<DevicesPage> {
     );
 
     if (newDevice != null) {
+      //await _deviceRepository.saveDevice(newDevice);
+      // TODO: No segundo parâmetro da função create device, o parâmetro real deverá ser o id da esp selecionada em configuration_page
+      int id = await SQLiteHelper.createDevice(newDevice, 1);
+      print("Device created with id : $id");
       setState(() {
         _devices.add(newDevice);
       });
-      // Adicione a lógica para salvar no repositório
-      await _deviceRepository.saveDevice(newDevice);
     }
   }
 
@@ -132,11 +114,11 @@ class _DevicesPageState extends State<DevicesPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              device.type == DeviceType.sensor ? "Sensor" : "Atuador",
+                              device.isSensor() ? "Sensor" : "Atuador",
                               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 17.3)),
 
                             Text(
-                              device.description,
+                              device.name,
                               textAlign: TextAlign.justify,
                               style: const TextStyle(fontSize: 16)),
                           ],
@@ -167,8 +149,8 @@ class _DevicesPageState extends State<DevicesPage> {
                                   ),
                                   TextButton(
                                     onPressed: () {
-                                      Navigator.pop(context, 'Delete');
                                       removeDevice(device);
+                                      Navigator.pop(context, 'Delete');
                                     },
                                     child: const Text('Delete'),
                                   ),

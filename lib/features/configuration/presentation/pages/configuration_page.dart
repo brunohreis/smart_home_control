@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:smart_home_control/core/data/models/device_model.dart';
 import 'package:smart_home_control/core/data/models/esp_model.dart';
 import 'package:smart_home_control/core/data/repositories/esp_repository.dart';
 import 'package:smart_home_control/core/data/sqlite/sqlite.dart';

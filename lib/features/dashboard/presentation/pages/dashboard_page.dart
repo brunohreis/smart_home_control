@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../devices/presentation/pages/devices_page.dart';
+import '../../../../core/data/models/device_model.dart';
+import '../../../../core/data/sqlite/sqlite.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -9,14 +10,26 @@ class DashboardPage extends StatefulWidget {
 }
 
 class _DashboardPageState extends State<DashboardPage> {
-  final List<Device> _devices = [
-    Device(1, "Sensor de temperatura DHT11", true, 0),
-    Device(2, "Sensor de temperatura DHT11", true, 0),
-    Device(3, "Sensor de umidade DHT11", true, 1),
-    Device(4, "Sensor de umidade DHT11", true, 1),
-    Device(5, "Relé conectado ao ar-condicionado da sala", false, 2),
-    Device(6, "Relé conectado ao portão da garagem", false, 2),
-  ];
+  List<DeviceModel> _devices = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadDevicesList(); // Carregar a lista de ESPs quando a tela é inicializada
+  }
+
+  Future<void> _loadDevicesList() async {
+    //final devices = await _deviceRepository.getDeviceList();
+    //TODO: Implementar uma seleção da esp a ter os seus dispositivos carregados nessa página (essa seleção ocorrerá na página configuration_page), que terá o seu id passado por parâmetro na função readAllDevices
+    List<DeviceModel> aux = await SQLiteHelper.readAllDevices(1);
+
+    // a lista de dispositivos é ordenada de acordo com o tipo de dispositivo, para que visualizações parecidas fiquem pŕoximas
+    aux.sort();
+
+    setState(() {
+      _devices = aux;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +62,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          device.description,
+                          device.name,
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 20,

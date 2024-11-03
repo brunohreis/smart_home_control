@@ -1,10 +1,11 @@
+/*
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:smart_home_control/core/data/models/esp_model.dart';
 
 import '../models/device_model.dart';
-class DatabaseOperations{
+class FirebaseHelper{
   dynamic db;
-  DatabaseOperations(){
+  FirebaseHelper(){
     this.db = FirebaseFirestore.instance;
   }
   Future<void> addEsp(EspModel esp) async {
@@ -64,4 +65,4 @@ class DatabaseOperations{
   }
 
 
-}
+}*/
