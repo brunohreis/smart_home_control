@@ -1,6 +1,8 @@
 // lib/core/widget/bottom_nav_bar.dart
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:smart_home_control/core/data/models/devices_list_model.dart';
 import 'package:smart_home_control/features/alerts/presentation/pages/alerts_page.dart';
 import 'package:smart_home_control/features/configuration/presentation/pages/configuration_page.dart';
 import 'package:smart_home_control/features/dashboard/presentation/pages/dashboard_page.dart';
@@ -33,45 +35,48 @@ class _BottomNavBarState extends State<BottomNavBar> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: IndexedStack(
-        index: _selectedIndex,
-        children: _pages,
-      ),
-      bottomNavigationBar: CurvedNavigationBar(
-        index: _selectedIndex,
-        backgroundColor: Colors.transparent,
-        buttonBackgroundColor: Colors.green,
-        color: Colors.green,
-        animationDuration: const Duration(milliseconds: 300),
-        items: const <Widget>[
-          Icon(
-            Icons.devices,
-            size: 26,
-            color: Colors.white,
-          ),
-          Icon(
-            Icons.list,
-            size: 26,
-            color: Colors.white,
-          ),
-          Icon(
-            Icons.dashboard,
-            size: 26,
-            color: Colors.white,
-          ),
-          Icon(
-            Icons.notifications,
-            size: 26,
-            color: Colors.white,
-          ),
-          Icon(
-            Icons.settings,
-            size: 26,
-            color: Colors.white,
-          ),
-        ],
-        onTap: _onItemTapped,
+    return ChangeNotifierProvider(
+      create: (context) => DevicesListModel(),
+      child: Scaffold(
+        body: IndexedStack(
+          index: _selectedIndex,
+          children: _pages,
+        ),
+        bottomNavigationBar: CurvedNavigationBar(
+          index: _selectedIndex,
+          backgroundColor: Colors.transparent,
+          buttonBackgroundColor: Colors.green,
+          color: Colors.green,
+          animationDuration: const Duration(milliseconds: 300),
+          items: const <Widget>[
+            Icon(
+              Icons.devices,
+              size: 26,
+              color: Colors.white,
+            ),
+            Icon(
+              Icons.list,
+              size: 26,
+              color: Colors.white,
+            ),
+            Icon(
+              Icons.dashboard,
+              size: 26,
+              color: Colors.white,
+            ),
+            Icon(
+              Icons.notifications,
+              size: 26,
+              color: Colors.white,
+            ),
+            Icon(
+              Icons.settings,
+              size: 26,
+              color: Colors.white,
+            ),
+          ],
+          onTap: _onItemTapped,
+        ),
       ),
     );
   }
