@@ -4,10 +4,10 @@ import 'package:smart_home_control/features/dashboard/presentation/components/bo
 import 'package:smart_home_control/features/dashboard/presentation/components/humidity_gauge/humidity_gauge.dart';
 import 'package:smart_home_control/features/dashboard/presentation/components/temperature_gauge/temperature_gauge.dart';
 
-class DeviceModel implements Comparable<DeviceModel>{
+class DeviceModel implements Comparable<DeviceModel> {
   int id;
   String name;
-  DeviceType type; // Usando a enumeração
+  DeviceType type;
 
   DeviceModel({
     required this.id,
@@ -32,8 +32,9 @@ class DeviceModel implements Comparable<DeviceModel>{
       type: DeviceType.values[map['type']],
     );
   }
-  Widget getCorrespondingWidget(){
-    switch (type){
+
+  Widget getCorrespondingWidget() {
+    switch (type) {
       case DeviceType.temperature:
         return TemperatureGauge(temperatureValue: getCurrentValue());
       case DeviceType.humidity:
@@ -42,10 +43,10 @@ class DeviceModel implements Comparable<DeviceModel>{
         return BooleanDevice(value: getCurrentValue());
     }
   }
-  getCurrentValue(){
-    // Aqui virá a lógica de seleção do valor retornado pelo dispositivo no banco de dados
-    // O que está implementado atualmente só serve para fins de teste
-    switch (type){
+
+  getCurrentValue() {
+    // Lógica de seleção do valor retornado pelo dispositivo no banco de dados
+    switch (type) {
       case DeviceType.temperature:
         return 35.0;
       case DeviceType.humidity:
@@ -54,22 +55,30 @@ class DeviceModel implements Comparable<DeviceModel>{
         return true;
     }
   }
-  bool isSensor(){
-    if (type == DeviceType.temperature || type == DeviceType.humidity){
-      return true;
-    }
-    else{
-      return false;
-    }
+
+  bool isSensor() {
+    return type == DeviceType.temperature || type == DeviceType.humidity;
   }
+
   @override
   int compareTo(DeviceModel other) {
-    if (type.index < other.type.index) {
-      return -1;
-    } else if (type.index > other.type.index) {
-      return 1;
-    } else {
-      return 0;
-    }
+    return type.index.compareTo(other.type.index);
+  }
+
+  // Implementação de igualdade e hashCode para permitir a remoção correta
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        other is DeviceModel &&
+            runtimeType == other.runtimeType &&
+            id == other.id;
+  }
+
+  @override
+  int get hashCode => id.hashCode;
+
+  @override
+  String toString() {
+    return 'DeviceModel(id: $id, name: $name, type: $type)';
   }
 }

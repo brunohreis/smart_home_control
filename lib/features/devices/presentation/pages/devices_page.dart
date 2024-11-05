@@ -1,15 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:smart_home_control/core/data/models/devices_list_model.dart';
-import 'package:smart_home_control/core/data/models/esp_model.dart';
-import 'package:smart_home_control/features/dashboard/presentation/components/boolean_device/boolean_device.dart';
-import 'package:smart_home_control/features/dashboard/presentation/components/humidity_gauge/humidity_gauge.dart';
-import 'package:smart_home_control/features/dashboard/presentation/components/temperature_gauge/temperature_gauge.dart';
-
 import 'package:smart_home_control/core/data/models/device_model.dart';
-import 'package:smart_home_control/core/data/models/device_type.dart';
-import 'package:smart_home_control/core/data/repositories/device_repository.dart';
-import '../../../../core/data/sqlite/sqlite.dart';
 import 'add_new_device_page.dart';
 
 class DevicesPage extends StatefulWidget {
@@ -24,15 +16,17 @@ class _DevicesPageState extends State<DevicesPage> {
   @override
   void initState() {
     super.initState();
+
+    // Carrega a lista de dispositivos ao inicializar a página
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<DevicesListModel>(context, listen: false).loadDevicesList();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Consumer<DevicesListModel>(
       builder: (context, dlm, child) {
-
-        // Ao carregar a página, a primeira coisa a ser feita é carregar a lista de dispositivos
-        dlm.loadDevicesList();
 
         return Scaffold(
           appBar: AppBar(

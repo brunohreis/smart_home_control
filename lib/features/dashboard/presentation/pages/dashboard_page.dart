@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../../core/data/models/device_model.dart';
 import '../../../../core/data/models/devices_list_model.dart';
-import '../../../../core/data/sqlite/sqlite.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -16,15 +14,17 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   void initState() {
     super.initState();
+
+    // Carrega a lista de dispositivos ao inicializar a página
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<DevicesListModel>(context, listen: false).loadDevicesList();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Consumer<DevicesListModel>(
       builder: (context, dlm, child) {
-
-        // Ao carregar a página, a primeira coisa a ser feita é carregar a lista de dispositivos
-        dlm.loadDevicesList();
 
         return Scaffold(
           appBar: AppBar(

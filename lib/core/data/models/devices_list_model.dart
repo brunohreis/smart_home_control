@@ -10,6 +10,8 @@ class DevicesListModel extends ChangeNotifier {
     //final devices = await _deviceRepository.getDeviceList();
     //TODO: Implementar uma seleção da esp a ter os seus dispositivos carregados nessa página (essa seleção ocorrerá na página configuration_page), que terá o seu id passado por parâmetro na função readAllDevices
     devices = await SQLiteHelper.readAllDevices(1);
+
+    notifyListeners();
   }
 
   insertDevice(DeviceModel newDevice, int espId) async {
