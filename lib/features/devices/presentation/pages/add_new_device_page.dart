@@ -16,7 +16,7 @@ class _AddNewDevicePageState extends State<AddNewDevicePage> {
   @override
   void initState() {
     super.initState();
-    newDevice = DeviceModel(description: '', type: DeviceType.sensor); // Inicializa com um tipo padrão
+    newDevice = DeviceModel(id: 0, name: '', type: DeviceType.temperature); // Inicializa com um tipo padrão
   }
 
   void _submitForm() {
@@ -44,7 +44,7 @@ class _AddNewDevicePageState extends State<AddNewDevicePage> {
                 padding: const EdgeInsets.all(20.0),
                 child: TextFormField(
                   decoration: const InputDecoration(
-                    labelText: 'Descrição',
+                    labelText: 'Nome',
                     labelStyle: TextStyle(color: Colors.green),
                     focusedBorder: OutlineInputBorder(
                       borderSide: BorderSide(color: Colors.green), // Cor da borda quando focado
@@ -54,11 +54,11 @@ class _AddNewDevicePageState extends State<AddNewDevicePage> {
                     ),
                   ),
                   onSaved: (value) {
-                    newDevice.description = value!;
+                    newDevice.name = value!;
                   },
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Por favor, insira uma descrição';
+                      return 'Por favor, insira um nome';
                     }
                     return null;
                   },
@@ -68,7 +68,7 @@ class _AddNewDevicePageState extends State<AddNewDevicePage> {
               const Padding(
                 padding: EdgeInsets.all(20.0),
                 child: Text(
-                    "É um sensor ou um atuador?",
+                    "Qual é o tipo de dispositivo?",
                     textAlign: TextAlign.start,
                     style: TextStyle(
                       fontSize: 22,
@@ -77,10 +77,10 @@ class _AddNewDevicePageState extends State<AddNewDevicePage> {
               ),
               const SizedBox(height: 10.0),
               ListTile(
-                title: const Text('Sensor'),
+                title: const Text('Sensor de Temperatura'),
                 leading: Radio<DeviceType>(
                   activeColor: Colors.green,
-                  value: DeviceType.sensor,
+                  value: DeviceType.temperature,
                   groupValue: newDevice.type,
                   onChanged: (DeviceType? value) {
                     setState(() {
@@ -90,10 +90,23 @@ class _AddNewDevicePageState extends State<AddNewDevicePage> {
                 ),
               ),
               ListTile(
-                title: const Text('Atuador'),
+                title: const Text('Sensor de Umidade'),
                 leading: Radio<DeviceType>(
                   activeColor: Colors.green,
-                  value: DeviceType.actuator,
+                  value: DeviceType.humidity,
+                  groupValue: newDevice.type,
+                  onChanged: (DeviceType? value) {
+                    setState(() {
+                      newDevice.type = value!;
+                    });
+                  },
+                ),
+              ),
+              ListTile(
+                title: const Text('Relé'),
+                leading: Radio<DeviceType>(
+                  activeColor: Colors.green,
+                  value: DeviceType.relay,
                   groupValue: newDevice.type,
                   onChanged: (DeviceType? value) {
                     setState(() {

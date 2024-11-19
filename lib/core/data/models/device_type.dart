@@ -1,4 +1,5 @@
 enum DeviceType {
-  actuator,
-  sensor,
+  temperature,
+  humidity,
+  relay,
 }

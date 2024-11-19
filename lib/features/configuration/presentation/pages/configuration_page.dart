@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:smart_home_control/core/data/models/esp_model.dart';
 import 'package:smart_home_control/core/data/repositories/esp_repository.dart';
+import 'package:smart_home_control/core/data/sqlite/sqlite.dart';
 import 'package:smart_home_control/features/configuration/presentation/pages/new_esp_page.dart';
 import 'package:smart_home_control/features/configuration/presentation/pages/user_guide_page.dart';
 
@@ -12,30 +13,32 @@ class ConfigurationPage extends StatefulWidget {
 }
 
 class _ConfigurationPageState extends State<ConfigurationPage> {
-  final EspRepository _espRepository = EspRepository();
+  //final EspRepository _espRepository = EspRepository();
   List<EspModel> _espList = [];
 
-  void removeEsp(EspModel esp) {
-    setState(() {
-      _espList.remove(esp);
+  Future<void> removeEsp(EspModel esp) async {
+    await SQLiteHelper.deleteEsp(esp.id); // deleta a esp do banco de dados
+    setState((){
+      _espList.remove(esp); // remove a esp da lista que é usada para visualização
     });
   }
 
-  void addEspToDataset(EspModel esp) {
+  Future<void> _loadEspList() async {
+    //final espList = await _espRepository.getEspList();
+    List<EspModel> aux = await SQLiteHelper.readAllEsps();
+    setState(() {
+      _espList = aux;
+    });
+  }
+
+  void addEspToList(EspModel esp) {
     setState(() {
       _espList.add(esp);
     });
   }
 
-  Future<void> _loadEspList() async {
-    final espList = await _espRepository.getEspList();
-    setState(() {
-      _espList = espList;
-    });
-  }
-
   Future<void> _addEsp() async {
-    final newEsp = await Navigator.push<EspModel>(
+    var newEsp = await Navigator.push<EspModel>(
       context,
       MaterialPageRoute(
         builder: (context) => NewEspPage(),
@@ -43,8 +46,10 @@ class _ConfigurationPageState extends State<ConfigurationPage> {
     );
 
     if (newEsp != null) {
-      await _espRepository.saveEsp(newEsp); // Salvar no repositório
-      addEspToDataset(newEsp);
+      //await _espRepository.saveEsp(newEsp); // Salvar no repositório
+      int id = await SQLiteHelper.createEsp(newEsp); // insere no bd sqlite e recebe o id gerado
+      newEsp.id = id; // o objeto esp passa a armazenar o seu id correspondente no banco de dados
+      addEspToList(newEsp); // a esp é adicionada à lista usada para visualização
     }
   }
 
@@ -91,7 +96,7 @@ class _ConfigurationPageState extends State<ConfigurationPage> {
               shrinkWrap: true,
               children: _espList.asMap().entries.map((entry) {
                 int index = entry.key; // Índice do ESP
-                EspModel device = entry.value; // ESP32 correspondente
+                EspModel curEsp = entry.value; // ESP32 correspondente
 
                 return Container(
                   margin: const EdgeInsets.symmetric(
@@ -122,12 +127,12 @@ class _ConfigurationPageState extends State<ConfigurationPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              device.name, // Use index + 1 para começar a contagem em 1
+                              curEsp.name, // Use index + 1 para começar a contagem em 1
                               style: const TextStyle(
                                   fontWeight: FontWeight.bold, fontSize: 17.3),
                             ),
                             Text(
-                              device.mac,
+                              curEsp.mac,
                               textAlign: TextAlign.justify,
                               style: const TextStyle(fontSize: 16),
                             ),
@@ -160,7 +165,7 @@ class _ConfigurationPageState extends State<ConfigurationPage> {
                                   TextButton(
                                     onPressed: () {
                                       Navigator.pop(context, 'Delete');
-                                      removeEsp(device);
+                                      removeEsp(curEsp);
                                     },
                                     child: const Text('Delete'),
                                   ),
