@@ -33,6 +33,15 @@ migrate_working_dir/
 
 # Generated files
 generated_*
+# Ignorar arquivos gerados para Linux, macOS e Windows na pasta flutter
+**/linux/flutter/*.cc
+**/linux/flutter/*.h
+**/linux/flutter/*.cmake
+**/macos/flutter/*.cmake
+**/windows/flutter/*.cc
+**/windows/flutter/*.h
+**/windows/flutter/*.cmake
+
 
 # Symbolication related
 app.*.symbols
