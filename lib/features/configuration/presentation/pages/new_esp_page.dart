@@ -15,7 +15,7 @@ class _NewEspPageState extends State<NewEspPage> {
   @override
   void initState() {
     super.initState();
-    newDevice = EspModel(id: 0, mac: '', name: ''); // Inicializa newDevice aqui
+    newDevice = EspModel(id: '', macAddress: '', name: ''); // Inicializa newDevice aqui
   }
 
   void _submitForm() {
@@ -77,7 +77,7 @@ class _NewEspPageState extends State<NewEspPage> {
                     ),
                   ),
                   onSaved: (value) {
-                    newDevice.mac = value!;
+                    newDevice.macAddress = value!;
                   },
                   validator: (value) {
                     if (value == null || value.isEmpty) {

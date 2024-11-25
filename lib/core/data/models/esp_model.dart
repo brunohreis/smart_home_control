@@ -1,11 +1,11 @@
 class EspModel {
-  int id;
-  String mac;
+  String id;
+  String macAddress;
   String name;
 
   EspModel({
     required this.id,
-    required this.mac,
+    required this.macAddress,
     required this.name,
   });
 
@@ -13,7 +13,7 @@ class EspModel {
   Map<String, dynamic> toMap() {
     return {
       'id': id,
-      'mac': mac,
+      'macAddress': macAddress,
       'name': name,
     };
   }
@@ -22,7 +22,7 @@ class EspModel {
   factory EspModel.fromMap(Map<String, dynamic> map) {
     return EspModel(
       id: map['id'],
-      mac: map['mac'] ?? '',
+      macAddress: map['macAddress'] ?? '',
       name: map['name'] ?? '',
     );
   }

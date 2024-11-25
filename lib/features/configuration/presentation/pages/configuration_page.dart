@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:smart_home_control/core/data/firebase/esp_service.dart';
 import 'package:smart_home_control/core/data/models/esp_model.dart';
-import 'package:smart_home_control/core/data/repositories/esp_repository.dart';
-import 'package:smart_home_control/core/data/sqlite/sqlite.dart';
 import 'package:smart_home_control/features/configuration/presentation/pages/new_esp_page.dart';
 import 'package:smart_home_control/features/configuration/presentation/pages/user_guide_page.dart';
 
@@ -13,57 +12,81 @@ class ConfigurationPage extends StatefulWidget {
 }
 
 class _ConfigurationPageState extends State<ConfigurationPage> {
-  //final EspRepository _espRepository = EspRepository();
+  final EspService _espService = EspService();
   List<EspModel> _espList = [];
-
-  Future<void> removeEsp(EspModel esp) async {
-    await SQLiteHelper.deleteEsp(esp.id); // deleta a esp do banco de dados
-    setState((){
-      _espList.remove(esp); // remove a esp da lista que é usada para visualização
-    });
-  }
+  bool _isLoading = false;
 
   Future<void> _loadEspList() async {
-    //final espList = await _espRepository.getEspList();
-    List<EspModel> aux = await SQLiteHelper.readAllEsps();
-    setState(() {
-      _espList = aux;
-    });
-  }
-
-  void addEspToList(EspModel esp) {
-    setState(() {
-      _espList.add(esp);
-    });
+    setState(() => _isLoading = true);
+    try {
+      final espList = await _espService.getEspList();
+      setState(() {
+        _espList = espList;
+      });
+    } catch (e) {
+      _showError('Failed to load ESPs: $e');
+    } finally {
+      setState(() => _isLoading = false);
+    }
   }
 
   Future<void> _addEsp() async {
     var newEsp = await Navigator.push<EspModel>(
       context,
       MaterialPageRoute(
-        builder: (context) => NewEspPage(),
-      )
+        builder: (context) => const NewEspPage(),
+      ),
     );
 
     if (newEsp != null) {
-      //await _espRepository.saveEsp(newEsp); // Salvar no repositório
-      int id = await SQLiteHelper.createEsp(newEsp); // insere no bd sqlite e recebe o id gerado
-      newEsp.id = id; // o objeto esp passa a armazenar o seu id correspondente no banco de dados
-      addEspToList(newEsp); // a esp é adicionada à lista usada para visualização
+      setState(() => _isLoading = true);
+      try {
+        final addedEsp = await _espService.addEsp(newEsp);
+        setState(() {
+          _espList.add(addedEsp);
+        });
+      } catch (e) {
+        _showError('Failed to add ESP: $e');
+      } finally {
+        setState(() => _isLoading = false);
+      }
     }
+  }
+
+  Future<void> _removeEsp(EspModel esp) async {
+    setState(() => _isLoading = true);
+    try {
+      await _espService.deleteEsp(esp.id);
+      setState(() {
+        _espList.remove(esp);
+      });
+    } catch (e) {
+      _showError('Failed to delete ESP: $e');
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  void _showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red,
+      ),
+    );
   }
 
   void _navigateToUserGuide() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const UserGuidePage()), // Navegando para a tela do guia do usuário
+      MaterialPageRoute(builder: (context) => const UserGuidePage()),
     );
   }
 
   @override
   void initState() {
     super.initState();
-    _loadEspList(); // Carregar a lista de ESPs quando a tela é inicializada
+    _loadEspList();
   }
 
   @override
@@ -83,114 +106,62 @@ class _ConfigurationPageState extends State<ConfigurationPage> {
                 Icons.info,
                 color: Colors.grey,
               ),
-              tooltip: 'Guia do Usuário',
+              tooltip: 'User Guide',
               onPressed: _navigateToUserGuide,
             ),
           ],
         ),
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView(
-              shrinkWrap: true,
-              children: _espList.asMap().entries.map((entry) {
-                int index = entry.key; // Índice do ESP
-                EspModel curEsp = entry.value; // ESP32 correspondente
-
-                return Container(
-                  margin: const EdgeInsets.symmetric(
-                      vertical: 8.0, horizontal: 16.0),
-                  padding: const EdgeInsets.all(16.0),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(15.0),
-                    border: Border.all(
-                      color: Colors.grey.shade300,
-                      width: 1.5,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.2),
-                        spreadRadius: 1,
-                        blurRadius: 5,
-                        offset: const Offset(0, 3),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : _espList.isEmpty
+              ? const Center(child: Text('No ESP devices found.'))
+              : ListView.builder(
+                  itemCount: _espList.length,
+                  itemBuilder: (context, index) {
+                    final esp = _espList[index];
+                    return ListTile(
+                      leading: const Icon(Icons.memory, color: Colors.green),
+                      title: Text(
+                        esp.name,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
-                    ],
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.memory, color: Colors.green),
-                      const SizedBox(width: 12.5),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              curEsp.name, // Use index + 1 para começar a contagem em 1
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 17.3),
-                            ),
-                            Text(
-                              curEsp.mac,
-                              textAlign: TextAlign.justify,
-                              style: const TextStyle(fontSize: 16),
-                            ),
-                          ],
-                        ),
+                      subtitle: Text(esp.macAddress),
+                      trailing: IconButton(
+                        icon: const Icon(Icons.delete, color: Colors.red),
+                        onPressed: () => _confirmDeletion(esp),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 20.0, right: 1),
-                        child: CircleAvatar(
-                          backgroundColor: Colors.red,
-                          radius: 20,
-                          child: IconButton(
-                            icon: const Icon(Icons.delete),
-                            color: Colors.white,
-                            iconSize: 20,
-                            tooltip: "Excluir este ESP",
-                            onPressed: () => showDialog<String>(
-                              context: context,
-                              builder: (BuildContext context) => AlertDialog(
-                                title: const Text(
-                                    'Do you really want to delete the device?'),
-                                content:
-                                    const Text('This action cannot be undone.'),
-                                actions: <Widget>[
-                                  TextButton(
-                                    onPressed: () =>
-                                        Navigator.pop(context, 'Cancel'),
-                                    child: const Text('Cancel'),
-                                  ),
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.pop(context, 'Delete');
-                                      removeEsp(curEsp);
-                                    },
-                                    child: const Text('Delete'),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              }).toList(),
-            ),
-          ),
-        ],
-      ),
+                    );
+                  },
+                ),
       floatingActionButton: FloatingActionButton(
         onPressed: _addEsp,
-        tooltip: "Adicionar um novo ESP",
+        tooltip: "Add a new ESP",
         backgroundColor: Colors.green,
-        child: const Icon(
-          Icons.add,
-          color: Colors.white,
-        ),
+        child: const Icon(Icons.add, color: Colors.white),
+      ),
+    );
+  }
+
+  void _confirmDeletion(EspModel esp) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Confirm Deletion'),
+        content: const Text('Are you sure you want to delete this ESP?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _removeEsp(esp);
+            },
+            child: const Text('Delete'),
+          ),
+        ],
       ),
     );
   }

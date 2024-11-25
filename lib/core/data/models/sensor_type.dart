@@ -1,0 +1,21 @@
+enum SensorType {
+  DHT11,        // Sensor de Temperatura e Umidade (comum)
+  DHT22,        // Sensor de Temperatura e Umidade (comum)
+  AM2302,       // Sensor de Temperatura e Umidade (comum)
+  CCS811,       // Sensor de Qualidade do Ar (comum)
+  MH_Z19B,      // Sensor de CO2 (comum)
+  MQ135,        // Sensor de Gás (comum)
+  MQ9,          // Sensor de Gás (comum)
+  HC_SR501,     // Sensor de Movimento PIR (comum)
+  RCWL0516,     // Sensor de Movimento Radar (comum)
+  VL53L0X,      // Sensor de Distância a Laser (comum)
+  Ultrasonic,   // Sensor Ultrassônico de Distância (comum)
+  Maxbotix,     // Sensor Ultrassônico de Distância (comum)
+  TSL2561,      // Sensor de Luz Digital (comum)
+  APDS9960,     // Sensor de Cor, Luz e Proximidade (comum)
+  SW420,        // Sensor de Vibração (comum)
+  HX711,        // Sensor de Célula de Carga (comum)
+  YFS201,       // Sensor de Fluxo de Água (comum)
+  PH_SENSOR,    // Sensor de pH
+  MAX30100,     // Sensor de Oximetria (comum)
+}
