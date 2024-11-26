@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:smart_home_control/core/data/models/esp_model.dart';
+import 'package:uuid/uuid.dart';
 
 class NewEspPage extends StatefulWidget {
   const NewEspPage({super.key});
@@ -15,7 +16,8 @@ class _NewEspPageState extends State<NewEspPage> {
   @override
   void initState() {
     super.initState();
-    newDevice = EspModel(id: '', macAddress: '', name: ''); // Inicializa newDevice aqui
+    var uuid = Uuid();
+    newDevice = EspModel(id: uuid.v4(), macAddress: '', name: ''); // Inicializa newDevice aqui
   }
 
   void _submitForm() {

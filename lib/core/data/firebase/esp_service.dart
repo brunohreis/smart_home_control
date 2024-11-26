@@ -5,7 +5,7 @@ import 'package:smart_home_control/core/data/models/sensor_model.dart';
 import 'package:smart_home_control/core/data/models/actuator_model.dart';
 
 class EspService {
-  final String baseUrl = 'https://localhost:7208/api/Esp';
+  final String baseUrl = 'http://192.168.64.1:8080/api/esp';
 
   // GET /api/Esp
   Future<List<EspModel>> getEspList() async {
@@ -32,12 +32,15 @@ class EspService {
         body: jsonEncode(esp.toMap()),
       );
 
-      if (response.statusCode == 201) {
-        return EspModel.fromMap(jsonDecode(response.body));
+      if (response.statusCode == 200) {
+        print('200 ${response.body}');
+        return esp;
       } else {
+        print('else: $response');
         throw Exception('Failed to add esp: ${response.statusCode}');
       }
     } catch (e) {
+      print('catch: $e');
       throw Exception('Failed to add esp: $e');
     }
   }
