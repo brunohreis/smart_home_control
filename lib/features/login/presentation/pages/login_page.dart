@@ -1,77 +1,75 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_login/flutter_login.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:smart_home_control/core/routes/app_routes.dart';
 
-class LoginPage extends StatefulWidget {
+class LoginPage extends StatelessWidget {
   const LoginPage({Key? key}) : super(key: key);
 
-  @override
-  _LoginPageState createState() => _LoginPageState();
-}
-
-class _LoginPageState extends State<LoginPage> {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
-
-  Future<void> login() async {
+  Future<String?> _authUser(LoginData data) async {
     try {
-      await _auth.signInWithEmailAndPassword(
-        email: emailController.text,
-        password: passwordController.text,
+      // Tentar fazer login com email e senha
+      UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: data.name,
+        password: data.password,
       );
-      Navigator.pushReplacementNamed(context, '/dashboard'); // Altere para a rota principal do app
+
+      // Obter o token do Firebase
+      String? token = await userCredential.user?.getIdToken();
+      String? uid = userCredential.user?.uid;
+
+      if (token != null && uid != null) {
+        // Salvar o token e o UID no SharedPreferences
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('bearer_token', token);
+        await prefs.setString('user_uid', uid);
+
+        // Retorna null, indicando que o login foi bem-sucedido
+        return null;
+      } else {
+        return "Erro ao obter token de autenticação.";
+      }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erro: ${e.toString()}')),
-      );
+      return "Erro: ${e.toString()}";
     }
   }
 
-  Future<void> register() async {
+  Future<String?> _registerUser(SignupData data) async {
     try {
-      await _auth.createUserWithEmailAndPassword(
-        email: emailController.text,
-        password: passwordController.text,
-      );
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Cadastro realizado com sucesso!')),
-      );
+      if (data.name != null && data.password != null) {
+        // Tentar registrar o usuário
+        await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: data.name!,
+          password: data.password!,
+        );
+        // Registro bem-sucedido
+        return null;
+      } else {
+        return "Erro ao cadastrar usuário";
+      }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erro: ${e.toString()}')),
-      );
+      // Se ocorrer um erro no registro, retorna a mensagem de erro
+      return "Erro ao cadastrar usuário: ${e.toString()}";
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Login')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            TextField(
-              controller: emailController,
-              decoration: const InputDecoration(labelText: 'Email'),
-            ),
-            TextField(
-              controller: passwordController,
-              obscureText: true,
-              decoration: const InputDecoration(labelText: 'Senha'),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: login,
-              child: const Text('Entrar'),
-            ),
-            TextButton(
-              onPressed: register,
-              child: const Text('Cadastrar'),
-            ),
-          ],
-        ),
+    return FlutterLogin(
+      title: 'Smart Home Control',
+      onLogin: _authUser,
+      onSignup: _registerUser,
+      onRecoverPassword: (_) async =>
+          null, // Você pode adicionar funcionalidade de recuperação de senha se necessário
+      onSubmitAnimationCompleted: () {
+        Navigator.pushReplacementNamed(context, AppRoutes.home);
+      },
+      theme: LoginTheme(
+        primaryColor: Colors.green,
+        accentColor: Colors.white,
+        titleStyle: const TextStyle(color: Colors.black),
       ),
     );
   }

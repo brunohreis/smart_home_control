@@ -1,8 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:smart_home_control/core/data/firebase/esp_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:smart_home_control/core/data/firebase/firebase_service.dart';
 import 'package:smart_home_control/core/data/models/esp_model.dart';
 import 'package:smart_home_control/features/configuration/presentation/pages/new_esp_page.dart';
 import 'package:smart_home_control/features/configuration/presentation/pages/user_guide_page.dart';
+import 'package:smart_home_control/features/ui/toast/toast.dart';
 
 class ConfigurationPage extends StatefulWidget {
   const ConfigurationPage({super.key});
@@ -12,7 +15,7 @@ class ConfigurationPage extends StatefulWidget {
 }
 
 class _ConfigurationPageState extends State<ConfigurationPage> {
-  final EspService _espService = EspService();
+  final FirebaseService _espService = FirebaseService();
   List<EspModel> _espList = [];
   bool _isLoading = false;
 
@@ -24,7 +27,7 @@ class _ConfigurationPageState extends State<ConfigurationPage> {
         _espList = espList;
       });
     } catch (e) {
-      _showError('Failed to load ESPs: $e');
+      UiToast.showToast('Failed to load ESPs: $e', ToastType.error);
     } finally {
       setState(() => _isLoading = false);
     }
@@ -42,11 +45,13 @@ class _ConfigurationPageState extends State<ConfigurationPage> {
       setState(() => _isLoading = true);
       try {
         final addedEsp = await _espService.addEsp(newEsp);
+        UiToast.showToast(
+            "${newEsp.name} adicionado com sucesso", ToastType.success);
         setState(() {
           _espList.add(addedEsp);
         });
       } catch (e) {
-        _showError('Failed to add ESP: $e');
+        UiToast.showToast('Failed to add ESP: $e', ToastType.error);
       } finally {
         setState(() => _isLoading = false);
       }
@@ -57,30 +62,45 @@ class _ConfigurationPageState extends State<ConfigurationPage> {
     setState(() => _isLoading = true);
     try {
       await _espService.deleteEsp(esp.id);
+      UiToast.showToast("${esp.name} excluído com sucesso", ToastType.success);
       setState(() {
         _espList.remove(esp);
       });
     } catch (e) {
-      _showError('Failed to delete ESP: $e');
+      UiToast.showToast(
+          e.toString().replaceAll("Exception:", ""), ToastType.error);
     } finally {
       setState(() => _isLoading = false);
     }
   }
 
-  void _showError(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: Colors.red,
-      ),
-    );
+  // Método de logout
+  Future<void> logout() async {
+    try {
+      // Deslogar o usuário do Firebase
+      await FirebaseAuth.instance.signOut();
+
+      // Remover o token dos SharedPreferences
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.remove('bearer_token');
+      await prefs.remove('user_uid');
+
+      // Redirecionar para a tela de login
+      Navigator.pushReplacementNamed(context, '/login');
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Erro ao fazer logout: ${e.toString()}')),
+      );
+    }
   }
 
   void _navigateToUserGuide() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const UserGuidePage()),
-    );
+    print("***LogOut***");
+    logout();
+    // Navigator.push(
+    //   context,
+    //   MaterialPageRoute(builder: (context) => const UserGuidePage()),
+    // );
   }
 
   @override

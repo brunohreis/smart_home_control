@@ -1,10 +1,11 @@
 // lib/main.dart
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:smart_home_control/core/data/models/devices_list_model.dart';
 import 'package:smart_home_control/core/routes/app_routes.dart';
-import 'package:smart_home_control/core/widget/bottom_nav_bar.dart';
-import 'package:smart_home_control/features/login/presentation/pages/login_page.dart';
+import 'package:smart_home_control/features/login/components/auth.dart';
 import 'package:smart_home_control/firebase_options.dart';
 
 Future<void> main() async {
@@ -12,26 +13,30 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const MyApp());
+  
+  // Verifique se há um token salvo nos SharedPreferences
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  String? token = prefs.getString('bearer_token');
+
+  
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => DevicesListModel(),
+      child: MyApp(userToken: token),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final String? userToken;
+  const MyApp({super.key, this.userToken});
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<User?>(
-      stream: FirebaseAuth.instance.authStateChanges(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const CircularProgressIndicator(); // Tela de loading
-        }
-        if (snapshot.hasData) {
-          return const BottomNavBar(); // Usuário autenticado
-        } else {
-          return const LoginPage(); // Redireciona para a tela de login
-        }
-      },
+    return MaterialApp(
+      initialRoute: userToken != null ? AppRoutes.home : AppRoutes.login,
+      onGenerateRoute: AppRoutes.generateRoute,
+      home: AuthCheck(),
     );
   }
 }
