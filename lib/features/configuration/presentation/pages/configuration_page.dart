@@ -120,7 +120,7 @@ class _ConfigurationPageState extends State<ConfigurationPage> {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text('Configuration'),
+            const Text('Configurações'),
             IconButton(
               icon: const Icon(
                 Icons.info,
@@ -135,28 +135,72 @@ class _ConfigurationPageState extends State<ConfigurationPage> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _espList.isEmpty
-              ? const Center(child: Text('No ESP devices found.'))
+              ? const Center(child: Text('Nenhum ESP encontrado'))
               : ListView.builder(
                   itemCount: _espList.length,
                   itemBuilder: (context, index) {
                     final esp = _espList[index];
-                    return ListTile(
-                      leading: const Icon(Icons.memory, color: Colors.green),
-                      title: Text(
-                        esp.name,
-                        style: const TextStyle(fontWeight: FontWeight.bold),
+                    return Container(
+                      margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                      padding: const EdgeInsets.all(16.0),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(15.0),
+                        border: Border.all(
+                          color: Colors.grey.shade300,
+                          width: 1.5,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.2),
+                            spreadRadius: 1,
+                            blurRadius: 5,
+                            offset: const Offset(0, 3),
+                          ),
+                        ],
                       ),
-                      subtitle: Text(esp.macAddress),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.delete, color: Colors.red),
-                        onPressed: () => _confirmDeletion(esp),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              const Icon(Icons.memory, color: Colors.green),
+                              const SizedBox(width: 12.5),
+                              Expanded(
+                                child: Text(
+                                  esp.name,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18,
+                                  ),
+                                ),
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.delete_outline),
+                                onPressed: () {
+                                  _confirmDeletion(esp);
+                                },
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8.0),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'MAC: ${esp.macAddress}',
+                                style: const TextStyle(color: Colors.grey),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                     );
                   },
                 ),
       floatingActionButton: FloatingActionButton(
         onPressed: _addEsp,
-        tooltip: "Add a new ESP",
+        tooltip: "Adicionar novo ESP",
         backgroundColor: Colors.green,
         child: const Icon(Icons.add, color: Colors.white),
       ),
@@ -167,19 +211,19 @@ class _ConfigurationPageState extends State<ConfigurationPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Confirm Deletion'),
-        content: const Text('Are you sure you want to delete this ESP?'),
+        title: const Text('Confirmar exclusão'),
+        content: const Text('Tem certeza que deseja excluir este ESP?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: const Text('Cancelar'),
           ),
           TextButton(
             onPressed: () {
               Navigator.pop(context);
               _removeEsp(esp);
             },
-            child: const Text('Delete'),
+            child: const Text('Deletar'),
           ),
         ],
       ),

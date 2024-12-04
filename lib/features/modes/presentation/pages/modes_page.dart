@@ -6,9 +6,9 @@ class ModesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Modes')),
+      appBar: AppBar(title: const Text('Modos e operação')),
       body: const Center(
-        child: Text('Modes'),
+        child: Text('Modos e operação'),
       ),
     );
   }

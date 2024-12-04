@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:smart_home_control/core/data/firebase/firebase_service.dart';
-import 'package:smart_home_control/core/data/models/device_model.dart';
+import 'package:smart_home_control/core/data/models/actuator_model.dart';
 import 'package:smart_home_control/core/data/models/esp_model.dart';
+import 'package:smart_home_control/core/data/models/sensor_model.dart';
+import 'package:smart_home_control/features/devices/presentation/pages/add_sensor_page.dart';
 import 'package:smart_home_control/features/ui/toast/toast.dart';
 
-import 'add_new_device_page.dart';
+import 'add_actuator_page.dart';
 
 class DevicesPage extends StatefulWidget {
   const DevicesPage({super.key});
@@ -34,6 +36,102 @@ class _DevicesPageState extends State<DevicesPage> {
     }
   }
 
+  Future<void> _addActuator(String espId) async {
+    final newActuator = await Navigator.push<ActuatorModel>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AddActuatorPage(espId: espId),
+      ),
+    );
+
+    if (newActuator != null) {
+      try {
+        setState(() => _isLoading = true);
+        await _espService.addActuator(newActuator);
+        UiToast.showToast("Atuador ${newActuator.name} adicionado com sucesso",
+            ToastType.success);
+
+        // Atualiza a lista após a adição
+        await _loadEspList();
+      } catch (e) {
+        UiToast.showToast('Failed to add Sensor: $e', ToastType.error);
+      } finally {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
+
+  Future<void> _addSensor(String espId) async {
+    final newSensor = await Navigator.push<SensorModel>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AddSensorPage(espId: espId),
+      ),
+    );
+
+    if (newSensor != null) {
+      try {
+        setState(() => _isLoading = true);
+        await _espService.addSensor(newSensor);
+        UiToast.showToast("Sensor ${newSensor.name} adicionado com sucesso",
+            ToastType.success);
+
+        // Atualiza a lista após a adição
+        await _loadEspList();
+      } catch (e) {
+        UiToast.showToast('Failed to add Sensor: $e', ToastType.error);
+      } finally {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
+
+  // Método de confirmação genérico para exclusão de sensores/atuadores
+  void _confirmDeletion(String espId, String deviceId, String type) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Confirmar'),
+        content: Text('Tem certeza que deseja excluir esse $type?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _removeDevice(espId, deviceId, type);
+            },
+            child: const Text('Excluir'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Função para excluir dispositivo (sensor ou atuador)
+  Future<void> _removeDevice(String espId, String deviceId, String type) async {
+    try {
+      setState(() => _isLoading = true);
+
+      if (type == 'sensor') {
+        await _espService.deleteSensor(espId, deviceId);
+        UiToast.showToast('Sensor deleted successfully', ToastType.success);
+      } else if (type == 'actuator') {
+        await _espService.deleteActuator(espId, deviceId);
+        UiToast.showToast('Actuator deleted successfully', ToastType.success);
+      }
+
+      // Atualiza a lista após a exclusão
+      await _loadEspList();
+    } catch (e) {
+      UiToast.showToast('Failed to delete $type: $e', ToastType.error);
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -45,7 +143,7 @@ class _DevicesPageState extends State<DevicesPage> {
     return Scaffold(
       appBar: AppBar(
         leading: const Icon(Icons.devices, color: Colors.green),
-        title: const Text('Devices'),
+        title: const Text('Dispositivos'),
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -80,7 +178,6 @@ class _DevicesPageState extends State<DevicesPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Nome do ESP com botão de expandir/retrair
                           Row(
                             children: [
                               const Icon(Icons.device_hub, color: Colors.green),
@@ -121,22 +218,24 @@ class _DevicesPageState extends State<DevicesPage> {
                                 ),
                                 IconButton(
                                   icon: const Icon(Icons.add),
-                                  onPressed: () {
-                                    // Lógica para adicionar sensor
-                                  },
+                                  onPressed: () => _addSensor(esp.id),
                                 ),
                               ],
                             ),
                             if (esp.sensors != null && esp.sensors!.isNotEmpty)
                               ...esp.sensors!.map((sensor) {
                                 return ListTile(
-                                  leading: const Icon(Icons.sensor_door),
+                                  leading: const Icon(
+                                    Icons.thermostat,
+                                    color: Colors.green,
+                                  ),
                                   title: Text(sensor.name),
                                   subtitle: Text('Pin: ${sensor.pin1}'),
                                   trailing: IconButton(
-                                    icon: const Icon(Icons.delete),
+                                    icon: const Icon(Icons.delete_outline),
                                     onPressed: () {
-                                      // Lógica para excluir sensor
+                                      _confirmDeletion(
+                                          esp.id, sensor.id, 'sensor');
                                     },
                                   ),
                                 );
@@ -153,9 +252,7 @@ class _DevicesPageState extends State<DevicesPage> {
                                 ),
                                 IconButton(
                                   icon: const Icon(Icons.add),
-                                  onPressed: () {
-                                    // Lógica para adicionar atuador
-                                  },
+                                  onPressed: () => _addActuator(esp.id),
                                 ),
                               ],
                             ),
@@ -163,14 +260,18 @@ class _DevicesPageState extends State<DevicesPage> {
                                 esp.actuators!.isNotEmpty)
                               ...esp.actuators!.map((actuator) {
                                 return ListTile(
-                                  leading: const Icon(Icons.toggle_on),
+                                  leading: const Icon(
+                                    Icons.toggle_on,
+                                    color: Colors.green,
+                                  ),
                                   title: Text(actuator.name),
                                   subtitle:
                                       Text('Output Pin: ${actuator.outputPin}'),
                                   trailing: IconButton(
-                                    icon: const Icon(Icons.delete),
+                                    icon: const Icon(Icons.delete_outline),
                                     onPressed: () {
-                                      // Lógica para excluir atuador
+                                      _confirmDeletion(
+                                          esp.id, actuator.id!, 'actuator');
                                     },
                                   ),
                                 );
@@ -181,25 +282,6 @@ class _DevicesPageState extends State<DevicesPage> {
                     );
                   },
                 ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          DeviceModel? newDevice = await Navigator.push<DeviceModel>(
-            context,
-            MaterialPageRoute(
-              builder: (context) => AddNewDevicePage(),
-            ),
-          );
-
-          if (newDevice != null) {
-            setState(() {
-              // Adicionar novo dispositivo
-            });
-          }
-        },
-        tooltip: "Adicionar um novo dispositivo",
-        backgroundColor: Colors.green,
-        child: const Icon(Icons.add, color: Colors.white),
-      ),
     );
   }
 }

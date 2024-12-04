@@ -8,6 +8,8 @@ import 'package:smart_home_control/core/routes/app_routes.dart';
 import 'package:smart_home_control/features/login/components/auth.dart';
 import 'package:smart_home_control/firebase_options.dart';
 
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
@@ -34,9 +36,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: navigatorKey,  // Adiciona a chave global ao MaterialApp
       initialRoute: userToken != null ? AppRoutes.home : AppRoutes.login,
       onGenerateRoute: AppRoutes.generateRoute,
       home: AuthCheck(),
+      debugShowCheckedModeBanner: false,
     );
   }
 }

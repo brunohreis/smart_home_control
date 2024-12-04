@@ -6,9 +6,9 @@ class AlertsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Alerts')),
+      appBar: AppBar(title: const Text('Alertas')),
       body: const Center(
-        child: Text('Alerts'),
+        child: Text('Alertas'),
       ),
     );
   }

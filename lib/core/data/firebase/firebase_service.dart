@@ -9,6 +9,7 @@ class FirebaseService {
   final Dio api = DioClient.getInstance();
   final String baseUrl = '/esp';
   final String sensorUrl = '/sensor';
+  final String actuatorUrl = '/actuator';
 
   // GET /api/Esp
   Future<List<EspModel>> getEspList() async {
@@ -100,24 +101,8 @@ class FirebaseService {
     }
   }
 
-  // GET /api/Esp/{id}/actuators
-  Future<List<ActuatorModel>> getActuatorsByEspId(String id) async {
-    try {
-      final response = await api.get('$baseUrl/$id/actuators');
-
-      if (response.statusCode == 200) {
-        List<dynamic> jsonResponse = jsonDecode(response.data);
-        return jsonResponse.map((json) => ActuatorModel.fromMap(json)).toList();
-      } else {
-        throw Exception('Failed to fetch actuators: ${response.statusCode}');
-      }
-    } catch (e) {
-      throw Exception('Failed to fetch actuators: $e');
-    }
-  }
-
   // POST /api/Sensor
-  Future<void> addSensor(String espId, SensorModel sensor) async {
+  Future<void> addSensor(SensorModel sensor) async {
     try {
       final response = await api.post(
         sensorUrl,
@@ -125,7 +110,6 @@ class FirebaseService {
       );
 
       if (response.statusCode == 200) {
-        print('Sensor added successfully');
       } else {
         throw Exception('Failed to add sensor: ${response.statusCode}');
       }
@@ -182,6 +166,55 @@ class FirebaseService {
       }
     } catch (e) {
       throw Exception('Failed to delete sensor: $e');
+    }
+  }
+
+  // GET /api/Esp/{id}/actuators
+  Future<List<ActuatorModel>> getActuatorsByEspId(String id) async {
+    try {
+      final response = await api.get('$baseUrl/$id/actuators');
+
+      if (response.statusCode == 200) {
+        List<dynamic> jsonResponse = jsonDecode(response.data);
+        return jsonResponse.map((json) => ActuatorModel.fromMap(json)).toList();
+      } else {
+        throw Exception('Failed to fetch actuators: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Failed to fetch actuators: $e');
+    }
+  }
+
+  // POST /api/Esp/{id}/actuators
+  Future<void> addActuator(ActuatorModel actuator) async {
+    try {
+      final response = await api.post(
+        actuatorUrl,
+        data: jsonEncode(actuator.toMap()),
+      );
+
+      if (response.statusCode == 200) {
+        print('Actuator added successfully');
+      } else {
+        throw Exception('Failed to add actuator: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Failed to add actuator: $e');
+    }
+  }
+
+  // DELETE /api/Esp/{espId}/actuators/{id}
+  Future<void> deleteActuator(String espId, String id) async {
+    try {
+      final response = await api.delete('$actuatorUrl/$espId/$id');
+
+      if (response.statusCode == 204) {
+        print('Actuator deleted successfully');
+      } else {
+        throw Exception('Failed to delete actuator: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Failed to delete actuator: $e');
     }
   }
 }
