@@ -31,7 +31,7 @@ class SQLiteHelper{
         String query = "CREATE TABLE Esps "
             "(id INTEGER PRIMARY KEY AUTOINCREMENT, "
             "name TEXT, "
-            "mac TEXT);"
+            "macAddress TEXT);"
         ;
         db.execute(query);
         query = "CREATE TABLE Devices "
@@ -51,7 +51,7 @@ class SQLiteHelper{
     Database db = await getDatabase();
     Map<String, dynamic> data = {
       'name': esp.name,
-      'mac': esp.mac,
+      'macAddress': esp.macAddress,
     };
     int id = await db.insert("Esps", data);
     //print("Esp salva com id: $id");
