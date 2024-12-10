@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:smart_home_control/core/data/models/sensor_model.dart';
 import 'package:smart_home_control/core/data/models/sensor_type.dart';
-import 'package:uuid/uuid.dart';
 
 class AddSensorPage extends StatefulWidget {
   final String espId;
@@ -19,9 +18,8 @@ class _AddSensorPageState extends State<AddSensorPage> {
   @override
   void initState() {
     super.initState();
-    var uuid = Uuid();
     newSensor = SensorModel(
-      id: uuid.v4(),
+      id: '',
       name: '',
       pin1: 0,
       pin2: null,
@@ -52,6 +50,25 @@ class _AddSensorPageState extends State<AddSensorPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: TextFormField(
+                    decoration: const InputDecoration(
+                      labelText: 'ID do Sensor',
+                      labelStyle: TextStyle(color: Colors.green),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.green),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.green),
+                      ),
+                    ),
+                    onSaved: (value) => newSensor.id = value!,
+                    validator: (value) => value == null || value.isEmpty
+                        ? 'Insira o ID do sensor'
+                        : null,
+                  ),
+                ),
                 Padding(
                   padding: const EdgeInsets.all(20.0),
                   child: TextFormField(

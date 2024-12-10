@@ -4,7 +4,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smart_home_control/core/data/firebase/firebase_service.dart';
 import 'package:smart_home_control/core/data/models/esp_model.dart';
 import 'package:smart_home_control/features/configuration/presentation/pages/new_esp_page.dart';
-import 'package:smart_home_control/features/configuration/presentation/pages/user_guide_page.dart';
 import 'package:smart_home_control/features/ui/toast/toast.dart';
 
 class ConfigurationPage extends StatefulWidget {
@@ -18,6 +17,17 @@ class _ConfigurationPageState extends State<ConfigurationPage> {
   final FirebaseService _espService = FirebaseService();
   List<EspModel> _espList = [];
   bool _isLoading = false;
+
+  Future<void> _getTimestamp() async {
+    try {
+      final timestamp = await _espService.getTimestamp();
+      print("***$timestamp");
+    } catch (e) {
+      UiToast.showToast('Failed to load ESPs: $e', ToastType.error);
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
 
   Future<void> _loadEspList() async {
     setState(() => _isLoading = true);
@@ -106,6 +116,7 @@ class _ConfigurationPageState extends State<ConfigurationPage> {
   @override
   void initState() {
     super.initState();
+    // _getTimestamp();
     _loadEspList();
   }
 
@@ -141,7 +152,8 @@ class _ConfigurationPageState extends State<ConfigurationPage> {
                   itemBuilder: (context, index) {
                     final esp = _espList[index];
                     return Container(
-                      margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                      margin: const EdgeInsets.symmetric(
+                          vertical: 8.0, horizontal: 16.0),
                       padding: const EdgeInsets.all(16.0),
                       decoration: BoxDecoration(
                         color: Colors.white,

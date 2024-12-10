@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:uuid/uuid.dart';
 import 'package:smart_home_control/core/data/models/actuator_model.dart';
 import 'package:smart_home_control/core/data/models/actuator_type.dart';
 
@@ -19,9 +18,8 @@ class _AddActuatorPageState extends State<AddActuatorPage> {
   @override
   void initState() {
     super.initState();
-    var uuid = Uuid();
     newActuator = ActuatorModel(
-      id: uuid.v4(),
+      id: '',
       name: '',
       outputPin: 0,
       typeActuator: ActuatorType.Rele1Canal,
@@ -51,6 +49,25 @@ class _AddActuatorPageState extends State<AddActuatorPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: TextFormField(
+                    decoration: const InputDecoration(
+                      labelText: 'ID do Atuador',
+                      labelStyle: TextStyle(color: Colors.green),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.green),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.green),
+                      ),
+                    ),
+                    onSaved: (value) => newActuator.id = value!,
+                    validator: (value) => value == null || value.isEmpty
+                        ? 'Insira um ID válido'
+                        : null,
+                  ),
+                ),
                 Padding(
                   padding: const EdgeInsets.all(20.0),
                   child: TextFormField(

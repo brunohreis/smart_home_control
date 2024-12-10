@@ -58,7 +58,7 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FlutterLogin(
-      title: 'Smart Home Control',
+      title: 'Smart Home',
       onLogin: _authUser,
       onSignup: _registerUser,
       onRecoverPassword: (_) async =>

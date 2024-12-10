@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:smart_home_control/core/data/api/dio_client.dart';
+import 'package:smart_home_control/core/data/models/devices_model.dart';
 import 'package:smart_home_control/core/data/models/esp_model.dart';
 import 'package:smart_home_control/core/data/models/sensor_model.dart';
 import 'package:smart_home_control/core/data/models/actuator_model.dart';
@@ -10,6 +11,7 @@ class FirebaseService {
   final String baseUrl = '/esp';
   final String sensorUrl = '/sensor';
   final String actuatorUrl = '/actuator';
+  final String mqttUrl = '/Mqtt';
 
   // GET /api/Esp
   Future<List<EspModel>> getEspList() async {
@@ -217,4 +219,64 @@ class FirebaseService {
       throw Exception('Failed to delete actuator: $e');
     }
   }
+
+  // GET /api/Sensor/{espId}
+  Future<DevicesModel> getDevices() async {
+    try {
+      final response = await api.get('$baseUrl/devices');
+      if (response.statusCode == 200) {
+        if (response.data is Map<String, dynamic>) {
+          // Converte o objeto JSON para um DevicesModel
+          return DevicesModel.fromMap(response.data);
+        } else {
+          throw Exception('Invalid data returned for devices');
+        }
+      } else {
+        throw Exception('Failed to fetch devices: ${response.statusCode}');
+      }
+    } catch (e) {
+      print("Error fetching devices: $e");
+      throw Exception('Failed to fetch devices: $e');
+    }
+  }
+
+  Future<int> getTimestamp() async {
+    try {
+      final response = await api.get('$baseUrl/timestamp');
+
+      if (response.statusCode == 200) {
+        if (response.data is int) {
+          return response.data as int;
+        } else {
+          throw Exception('Dados inválidos retornados pela API');
+        }
+      } else {
+        throw Exception('Falha ao obter o timestamp: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Falha ao obter o timestamp: $e');
+    }
+  }
+
+// POST /api/mqtt/publish
+Future<void> publishMessage(String topic, String message) async {
+  try {
+    final response = await api.post(
+      '$mqttUrl/publish',
+      data: jsonEncode({
+        'topic': topic,
+        'message': message,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      print('Mensagem publicada com sucesso.');
+    } else {
+      throw Exception('Falha ao publicar a mensagem: ${response.statusCode}');
+    }
+  } catch (e) {
+    throw Exception('Erro ao publicar a mensagem: $e');
+  }
+}
+
 }
