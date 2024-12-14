@@ -7,7 +7,7 @@ import 'package:smart_home_control/features/alerts/presentation/pages/alerts_pag
 import 'package:smart_home_control/features/configuration/presentation/pages/configuration_page.dart';
 import 'package:smart_home_control/features/dashboard/presentation/pages/dashboard_page.dart';
 import 'package:smart_home_control/features/devices/presentation/pages/devices_page.dart';
-import 'package:smart_home_control/features/modes/presentation/pages/modes_page.dart';
+import 'package:smart_home_control/features/modes/presentation/pages/info_page.dart';
 
 class BottomNavBar extends StatefulWidget {
   const BottomNavBar({super.key});
@@ -21,9 +21,9 @@ class _BottomNavBarState extends State<BottomNavBar> {
 
   final List<Widget> _pages = const [
     DevicesPage(),
-    ModesPage(),
-    DashboardPage(),
     AlertsPage(),
+    DashboardPage(),
+    InfoPage(),
     ConfigurationPage(),
   ];
 
@@ -55,7 +55,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
               color: Colors.white,
             ),
             Icon(
-              Icons.list,
+              Icons.notifications,
               size: 26,
               color: Colors.white,
             ),
@@ -65,7 +65,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
               color: Colors.white,
             ),
             Icon(
-              Icons.notifications,
+              Icons.info,
               size: 26,
               color: Colors.white,
             ),

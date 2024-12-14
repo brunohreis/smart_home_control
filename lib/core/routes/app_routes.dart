@@ -5,7 +5,7 @@ import 'package:smart_home_control/features/dashboard/presentation/pages/dashboa
 import 'package:smart_home_control/features/alerts/presentation/pages/alerts_page.dart';
 import 'package:smart_home_control/features/devices/presentation/pages/devices_page.dart';
 import 'package:smart_home_control/features/login/presentation/pages/login_page.dart';
-import 'package:smart_home_control/features/modes/presentation/pages/modes_page.dart';
+import 'package:smart_home_control/features/modes/presentation/pages/info_page.dart';
 import 'package:smart_home_control/core/widget/bottom_nav_bar.dart';
 
 class AppRoutes {
@@ -29,7 +29,7 @@ class AppRoutes {
       case dashboard:
         return MaterialPageRoute(builder: (_) => const DashboardPage());
       case modes:
-        return MaterialPageRoute(builder: (_) => const ModesPage());
+        return MaterialPageRoute(builder: (_) => const InfoPage());
       case alerts:
         return MaterialPageRoute(builder: (_) => const AlertsPage());
       case devices:

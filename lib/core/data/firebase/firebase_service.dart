@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:smart_home_control/core/data/api/dio_client.dart';
+import 'package:smart_home_control/core/data/models/alert_model.dart';
 import 'package:smart_home_control/core/data/models/devices_model.dart';
 import 'package:smart_home_control/core/data/models/esp_model.dart';
 import 'package:smart_home_control/core/data/models/sensor_model.dart';
@@ -12,6 +13,7 @@ class FirebaseService {
   final String sensorUrl = '/sensor';
   final String actuatorUrl = '/actuator';
   final String mqttUrl = '/Mqtt';
+  final String alertsUrl = '/Alert';
 
   // GET /api/Esp
   Future<List<EspModel>> getEspList() async {
@@ -175,25 +177,107 @@ class FirebaseService {
     }
   }
 
-// POST /api/mqtt/publish
-Future<void> publishMessage(String topic, String message) async {
-  try {
-    final response = await api.post(
-      '$mqttUrl/publish',
-      data: jsonEncode({
-        'topic': topic,
-        'message': message,
-      }),
-    );
+  // POST /api/mqtt/publish
+  Future<void> publishMessage(String topic, String message) async {
+    try {
+      final response = await api.post(
+        '$mqttUrl/publish',
+        data: jsonEncode({
+          'topic': topic,
+          'message': message,
+        }),
+      );
 
-    if (response.statusCode == 200) {
-      print('Mensagem publicada com sucesso.');
-    } else {
-      throw Exception('Falha ao publicar a mensagem: ${response.statusCode}');
+      if (response.statusCode == 200) {
+        print('Mensagem publicada com sucesso.');
+      } else {
+        throw Exception('Falha ao publicar a mensagem: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Erro ao publicar a mensagem: $e');
     }
-  } catch (e) {
-    throw Exception('Erro ao publicar a mensagem: $e');
   }
-}
 
+  // GET /api/sensors
+  Future<List<SensorModel>> getSensors() async {
+    try {
+      final response = await api.get('$baseUrl/sensors');
+
+      if (response.statusCode == 200) {
+        if (response.data is List) {
+          // Converte o JSON recebido em uma lista de SensorModel
+          return (response.data as List)
+              .map((json) => SensorModel.fromMap(json))
+              .toList();
+        } else {
+          throw Exception('Dados inválidos retornados pela API');
+        }
+      } else {
+        throw Exception('Falha ao buscar sensores: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Erro ao buscar sensores: $e');
+      throw Exception('Erro ao buscar sensores: $e');
+    }
+  }
+
+  // POST /api/Sensor
+  Future<void> addAlert(AlertModel alert) async {
+    try {
+      final response = await api.put(
+        '$alertsUrl/${alert.sensorId}',
+        data: jsonEncode(alert.toMap()),
+        options: Options(
+          validateStatus: (status) {
+            return status! < 500;  // Permite status de erro 4xx sem lançar exceção
+          },
+        ),
+      );
+
+      if (response.statusCode == 200) {
+      } else {
+        throw Exception('Failed to add alert: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Failed to add alert: $e');
+    }
+  }
+
+  // GET /api/alerts
+  Future<List<AlertModel>> getAlerts() async {
+    try {
+      final response = await api.get(alertsUrl);
+
+      if (response.statusCode == 200) {
+        if (response.data is List) {
+          // Converte o JSON recebido em uma lista de AlertModel
+          return (response.data as List)
+              .map((json) => AlertModel.fromMap(json))
+              .toList();
+        } else {
+          throw Exception('Dados inválidos retornados pela API');
+        }
+      } else {
+        throw Exception('Falha ao buscar alertas: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Erro ao buscar alertas: $e');
+      throw Exception('Erro ao buscar alertas: $e');
+    }
+  }
+
+  // DELETE /api/Alert/{sensorId}
+  Future<void> deleteAlert(String sensorId) async {
+    try {
+      final response = await api.delete('$alertsUrl/$sensorId');
+
+      if (response.statusCode == 204) {
+        print('Alert deleted successfully');
+      } else {
+        throw Exception('Failed to delete alert: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Failed to delete alert: $e');
+    }
+  }
 }

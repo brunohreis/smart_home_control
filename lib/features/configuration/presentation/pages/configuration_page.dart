@@ -105,14 +105,8 @@ class _ConfigurationPageState extends State<ConfigurationPage> {
     }
   }
 
-  //TODO: Criar tela de informaçao e ajustar icone de logout
-  void _navigateToUserGuide() {
-    print("***LogOut***");
+  void _logout() {
     logout();
-    // Navigator.push(
-    //   context,
-    //   MaterialPageRoute(builder: (context) => const UserGuidePage()),
-    // );
   }
 
   @override
@@ -136,11 +130,11 @@ class _ConfigurationPageState extends State<ConfigurationPage> {
             const Text('Configurações'),
             IconButton(
               icon: const Icon(
-                Icons.info,
+                Icons.logout,
                 color: Colors.grey,
               ),
-              tooltip: 'User Guide',
-              onPressed: _navigateToUserGuide,
+              tooltip: 'Sair',
+              onPressed: _logout,
             ),
           ],
         ),

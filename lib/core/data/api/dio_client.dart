@@ -8,6 +8,7 @@ class DioClient {
     _dio ??= Dio(
       BaseOptions(
         baseUrl: 'http://localhost:5084/api', // Substitua pela URL da sua API
+        // baseUrl: 'https://smarthomecontrol-f3hcg0drhse0epf3.brazilsouth-01.azurewebsites.net/api', // Substitua pela URL da sua API
         // validateStatus: (status) {
         //   // Permite tratar respostas com status até 499 como válidas
         //   return status != null && status < 500;
