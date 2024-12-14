@@ -1,8 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:smart_home_control/core/data/firebase/firebase_service.dart';
 import 'package:smart_home_control/core/data/models/actuator_model.dart';
+import 'package:smart_home_control/core/data/models/actuator_type.dart';
 import 'package:smart_home_control/core/data/models/esp_model.dart';
 import 'package:smart_home_control/core/data/models/sensor_model.dart';
+import 'package:smart_home_control/core/data/models/sensor_type.dart';
 import 'package:smart_home_control/features/devices/presentation/pages/add_sensor_page.dart';
 import 'package:smart_home_control/features/ui/toast/toast.dart';
 
@@ -36,18 +40,32 @@ class _DevicesPageState extends State<DevicesPage> {
     }
   }
 
-  Future<void> _addActuator(String espId) async {
+  Future<void> _addActuator(EspModel esp) async {
     final newActuator = await Navigator.push<ActuatorModel>(
       context,
       MaterialPageRoute(
-        builder: (context) => AddActuatorPage(espId: espId),
+        builder: (context) => AddActuatorPage(espId: esp.id),
       ),
     );
 
     if (newActuator != null) {
       try {
         setState(() => _isLoading = true);
+
+        // Criando o JSON a partir de um mapa
+        final actuatorData = {
+          'actuatorId': newActuator.id, // Substitua com os dados reais
+          'type':
+              newActuator.typeActuator.value, // Substitua com os dados reais
+        };
+
+        // Serializando o JSON para uma string
+        final message = jsonEncode(actuatorData);
+
         await _espService.addActuator(newActuator);
+
+        _espService.publishMessage(
+            '/esp32/${esp.macAddress}/actuators_added/', message);
         UiToast.showToast("Atuador ${newActuator.name} adicionado com sucesso",
             ToastType.success);
 
@@ -61,18 +79,31 @@ class _DevicesPageState extends State<DevicesPage> {
     }
   }
 
-  Future<void> _addSensor(String espId) async {
+  Future<void> _addSensor(EspModel esp) async {
     final newSensor = await Navigator.push<SensorModel>(
       context,
       MaterialPageRoute(
-        builder: (context) => AddSensorPage(espId: espId),
+        builder: (context) => AddSensorPage(espId: esp.id),
       ),
     );
 
     if (newSensor != null) {
       try {
         setState(() => _isLoading = true);
+
+        // Criando o JSON a partir de um mapa
+        final sensorData = {
+          'sensorId': newSensor.id, // Substitua com os dados reais
+          'type': newSensor.typeSensor.value, // Substitua com os dados reais
+        };
+
+        // Serializando o JSON para uma string
+        final message = jsonEncode(sensorData);
+
         await _espService.addSensor(newSensor);
+
+        _espService.publishMessage(
+            '/esp32/${esp.macAddress}/sensors_added/', message);
         UiToast.showToast("Sensor ${newSensor.name} adicionado com sucesso",
             ToastType.success);
 
@@ -87,7 +118,7 @@ class _DevicesPageState extends State<DevicesPage> {
   }
 
   // Método de confirmação genérico para exclusão de sensores/atuadores
-  void _confirmDeletion(String espId, String deviceId, String type) {
+  void _confirmDeletion(EspModel esp, String deviceId, String type) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -101,7 +132,7 @@ class _DevicesPageState extends State<DevicesPage> {
           TextButton(
             onPressed: () {
               Navigator.pop(context);
-              _removeDevice(espId, deviceId, type);
+              _removeDevice(esp, deviceId, type);
             },
             child: const Text('Excluir'),
           ),
@@ -111,16 +142,32 @@ class _DevicesPageState extends State<DevicesPage> {
   }
 
   // Função para excluir dispositivo (sensor ou atuador)
-  Future<void> _removeDevice(String espId, String deviceId, String type) async {
+  Future<void> _removeDevice(EspModel esp, String deviceId, String type) async {
     try {
       setState(() => _isLoading = true);
 
+      // Monta o tópico e a mensagem de acordo com o tipo
+      String topic = '';
+      Map<String, String> message = {};
+
       if (type == 'sensor') {
-        await _espService.deleteSensor(espId, deviceId);
+        await _espService.deleteSensor(esp.id, deviceId);
         UiToast.showToast('Sensor deleted successfully', ToastType.success);
+
+        topic = '/esp32/${esp.macAddress}/sensors_rem/';
+        message = {'sensorId': deviceId};
       } else if (type == 'actuator') {
-        await _espService.deleteActuator(espId, deviceId);
+        await _espService.deleteActuator(esp.id, deviceId);
         UiToast.showToast('Actuator deleted successfully', ToastType.success);
+
+        topic = '/esp32/${esp.macAddress}/actuators_rem/';
+        message = {'actuatorId': deviceId};
+      }
+
+      // Publica a mensagem no tópico MQTT
+      if (topic.isNotEmpty && message.isNotEmpty) {
+        final jsonMessage = jsonEncode(message);
+        _espService.publishMessage(topic, jsonMessage);
       }
 
       // Atualiza a lista após a exclusão
@@ -218,7 +265,7 @@ class _DevicesPageState extends State<DevicesPage> {
                                 ),
                                 IconButton(
                                   icon: const Icon(Icons.add),
-                                  onPressed: () => _addSensor(esp.id),
+                                  onPressed: () => _addSensor(esp),
                                 ),
                               ],
                             ),
@@ -230,12 +277,11 @@ class _DevicesPageState extends State<DevicesPage> {
                                     color: Colors.green,
                                   ),
                                   title: Text(sensor.name),
-                                  subtitle: Text('Pin: ${sensor.pin1}'),
                                   trailing: IconButton(
                                     icon: const Icon(Icons.delete_outline),
                                     onPressed: () {
                                       _confirmDeletion(
-                                          esp.id, sensor.id, 'sensor');
+                                          esp, sensor.id, 'sensor');
                                     },
                                   ),
                                 );
@@ -252,7 +298,7 @@ class _DevicesPageState extends State<DevicesPage> {
                                 ),
                                 IconButton(
                                   icon: const Icon(Icons.add),
-                                  onPressed: () => _addActuator(esp.id),
+                                  onPressed: () => _addActuator(esp),
                                 ),
                               ],
                             ),
@@ -265,13 +311,11 @@ class _DevicesPageState extends State<DevicesPage> {
                                     color: Colors.green,
                                   ),
                                   title: Text(actuator.name),
-                                  subtitle:
-                                      Text('Output Pin: ${actuator.outputPin}'),
                                   trailing: IconButton(
                                     icon: const Icon(Icons.delete_outline),
                                     onPressed: () {
                                       _confirmDeletion(
-                                          esp.id, actuator.id!, 'actuator');
+                                          esp, actuator.id!, 'actuator');
                                     },
                                   ),
                                 );

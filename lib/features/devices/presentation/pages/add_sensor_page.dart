@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:smart_home_control/core/data/models/sensor_model.dart';
 import 'package:smart_home_control/core/data/models/sensor_type.dart';
+import 'package:uuid/uuid.dart';
 
 class AddSensorPage extends StatefulWidget {
   final String espId;
@@ -18,14 +19,13 @@ class _AddSensorPageState extends State<AddSensorPage> {
   @override
   void initState() {
     super.initState();
+    super.initState();
+    var uuid = Uuid();
     newSensor = SensorModel(
-      id: '',
+      id: uuid.v4(),
       name: '',
-      pin1: 0,
-      pin2: null,
       type: SensorType.DHT11,
       espId: widget.espId,
-      isDigital: false,
     );
   }
 
@@ -54,25 +54,6 @@ class _AddSensorPageState extends State<AddSensorPage> {
                   padding: const EdgeInsets.all(20.0),
                   child: TextFormField(
                     decoration: const InputDecoration(
-                      labelText: 'ID do Sensor',
-                      labelStyle: TextStyle(color: Colors.green),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.green),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.green),
-                      ),
-                    ),
-                    onSaved: (value) => newSensor.id = value!,
-                    validator: (value) => value == null || value.isEmpty
-                        ? 'Insira o ID do sensor'
-                        : null,
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: TextFormField(
-                    decoration: const InputDecoration(
                       labelText: 'Nome do Sensor',
                       labelStyle: TextStyle(color: Colors.green),
                       focusedBorder: OutlineInputBorder(
@@ -86,52 +67,6 @@ class _AddSensorPageState extends State<AddSensorPage> {
                     validator: (value) => value == null || value.isEmpty
                         ? 'Insira um nome'
                         : null,
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: TextFormField(
-                    decoration: const InputDecoration(
-                      labelText: 'Pin 1',
-                      labelStyle: TextStyle(color: Colors.green),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                            color: Colors.green), // Cor da borda quando focado
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                            color:
-                                Colors.green), // Cor da borda quando não focado
-                      ),
-                    ),
-                    keyboardType: TextInputType.number,
-                    onSaved: (value) => newSensor.pin1 = int.parse(value!),
-                    validator: (value) => value == null || value.isEmpty
-                        ? 'Insira o Pin 1'
-                        : null,
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: TextFormField(
-                    decoration: const InputDecoration(
-                      labelText: 'Pin 2 (Opcional)',
-                      labelStyle: TextStyle(color: Colors.green),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                            color: Colors.green), // Cor da borda quando focado
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                            color:
-                                Colors.green), // Cor da borda quando não focado
-                      ),
-                    ),
-                    keyboardType: TextInputType.number,
-                    onSaved: (value) => newSensor.pin2 =
-                        value != null && value.isNotEmpty
-                            ? int.parse(value)
-                            : null,
                   ),
                 ),
                 Padding(
@@ -162,28 +97,6 @@ class _AddSensorPageState extends State<AddSensorPage> {
                         newSensor.type = value!;
                       });
                     },
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.green, width: 1.0),
-                      borderRadius: BorderRadius.circular(5.0),
-                    ),
-                    child: CheckboxListTile(
-                      title: const Text('É Digital?'),
-                      value: newSensor.isDigital,
-                      activeColor:
-                          Colors.green, // Cor do checkbox quando marcado
-                      checkColor:
-                          Colors.white, // Cor do ícone de "check" no checkbox
-                      onChanged: (value) {
-                        setState(() {
-                          newSensor.isDigital = value!;
-                        });
-                      },
-                    ),
                   ),
                 ),
               ],

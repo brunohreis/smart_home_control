@@ -18,10 +18,11 @@ class _ConfigurationPageState extends State<ConfigurationPage> {
   List<EspModel> _espList = [];
   bool _isLoading = false;
 
+  //TODO: Criar banco local atualizado via timestamp
   Future<void> _getTimestamp() async {
     try {
       final timestamp = await _espService.getTimestamp();
-      print("***$timestamp");
+      print(timestamp);
     } catch (e) {
       UiToast.showToast('Failed to load ESPs: $e', ToastType.error);
     } finally {
@@ -104,6 +105,7 @@ class _ConfigurationPageState extends State<ConfigurationPage> {
     }
   }
 
+  //TODO: Criar tela de informaçao e ajustar icone de logout
   void _navigateToUserGuide() {
     print("***LogOut***");
     logout();

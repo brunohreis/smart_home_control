@@ -4,6 +4,9 @@ import 'package:smart_home_control/features/dashboard/presentation/components/bo
 import 'package:smart_home_control/features/dashboard/presentation/components/humidity_gauge/humidity_gauge.dart';
 import 'package:smart_home_control/features/dashboard/presentation/components/temperature_gauge/temperature_gauge.dart';
 
+/**
+ * @Deprecated
+ */
 class DeviceModel implements Comparable<DeviceModel> {
   int id;
   String name;
@@ -33,16 +36,16 @@ class DeviceModel implements Comparable<DeviceModel> {
     );
   }
 
-  Widget getCorrespondingWidget() {
-    switch (type) {
-      case DeviceType.temperature:
-        return TemperatureGauge(temperatureValue: getCurrentValue());
-      case DeviceType.humidity:
-        return HumidityGauge(humidityValue: getCurrentValue());
-      default:
-        return BooleanDevice(value: getCurrentValue());
-    }
-  }
+  // Widget getCorrespondingWidget() {
+  //   switch (type) {
+  //     case DeviceType.temperature:
+  //       return TemperatureGauge(temperatureValue: getCurrentValue());
+  //     case DeviceType.humidity:
+  //       return HumidityGauge(humidityValue: getCurrentValue());
+  //     default:
+  //       return BooleanDevice(value: getCurrentValue());
+  //   }
+  // }
 
   getCurrentValue() {
     // Lógica de seleção do valor retornado pelo dispositivo no banco de dados

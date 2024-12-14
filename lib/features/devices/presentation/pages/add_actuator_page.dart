@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:smart_home_control/core/data/models/actuator_model.dart';
 import 'package:smart_home_control/core/data/models/actuator_type.dart';
+import 'package:uuid/uuid.dart';
 
 class AddActuatorPage extends StatefulWidget {
   final String espId;
@@ -18,13 +19,12 @@ class _AddActuatorPageState extends State<AddActuatorPage> {
   @override
   void initState() {
     super.initState();
+    var uuid = Uuid();
     newActuator = ActuatorModel(
-      id: '',
+      id: uuid.v4(),
       name: '',
-      outputPin: 0,
-      typeActuator: ActuatorType.Rele1Canal,
+      typeActuator: ActuatorType.Lampada,
       espId: widget.espId,
-      isDigital: false,
     );
   }
 
@@ -53,25 +53,6 @@ class _AddActuatorPageState extends State<AddActuatorPage> {
                   padding: const EdgeInsets.all(20.0),
                   child: TextFormField(
                     decoration: const InputDecoration(
-                      labelText: 'ID do Atuador',
-                      labelStyle: TextStyle(color: Colors.green),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.green),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.green),
-                      ),
-                    ),
-                    onSaved: (value) => newActuator.id = value!,
-                    validator: (value) => value == null || value.isEmpty
-                        ? 'Insira um ID válido'
-                        : null,
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: TextFormField(
-                    decoration: const InputDecoration(
                       labelText: 'Nome do Atuador',
                       labelStyle: TextStyle(color: Colors.green),
                       focusedBorder: OutlineInputBorder(
@@ -84,27 +65,6 @@ class _AddActuatorPageState extends State<AddActuatorPage> {
                     onSaved: (value) => newActuator.name = value!,
                     validator: (value) => value == null || value.isEmpty
                         ? 'Insira um nome'
-                        : null,
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: TextFormField(
-                    decoration: const InputDecoration(
-                      labelText: 'Pin de Saída',
-                      labelStyle: TextStyle(color: Colors.green),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.green),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.green),
-                      ),
-                    ),
-                    keyboardType: TextInputType.number,
-                    onSaved: (value) =>
-                        newActuator.outputPin = int.parse(value!),
-                    validator: (value) => value == null || value.isEmpty
-                        ? 'Insira o Pin de Saída'
                         : null,
                   ),
                 ),
@@ -133,26 +93,6 @@ class _AddActuatorPageState extends State<AddActuatorPage> {
                         newActuator.typeActuator = value!;
                       });
                     },
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.green, width: 1.0),
-                      borderRadius: BorderRadius.circular(5.0),
-                    ),
-                    child: CheckboxListTile(
-                      title: const Text('É Digital?'),
-                      value: newActuator.isDigital,
-                      activeColor: Colors.green,
-                      checkColor: Colors.white,
-                      onChanged: (value) {
-                        setState(() {
-                          newActuator.isDigital = value!;
-                        });
-                      },
-                    ),
                   ),
                 ),
               ],

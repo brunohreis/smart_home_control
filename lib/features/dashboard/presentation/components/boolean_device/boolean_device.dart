@@ -1,21 +1,47 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:smart_home_control/core/data/firebase/firebase_service.dart';
+import 'package:smart_home_control/core/data/models/actuator_data.dart';
+import 'package:smart_home_control/core/data/models/actuator_model.dart';
 
 class BooleanDevice extends StatefulWidget {
   final bool value;
+  final ActuatorModel actuator; // Adiciona o ID do atuador
 
-  const BooleanDevice({super.key, required this.value});
+  const BooleanDevice({super.key, required this.value, required this.actuator});
 
   @override
   State<BooleanDevice> createState() => _BooleanDeviceState();
 }
 
 class _BooleanDeviceState extends State<BooleanDevice> {
+  final FirebaseService _espService = FirebaseService();
   late bool currentValue;
+  late ActuatorModel actuator;
 
   @override
   void initState() {
     super.initState();
     currentValue = widget.value;
+    actuator = widget.actuator;
+  }
+
+  // Função que chama a API de publishMessage
+  Future<void> _publishCommand() async {
+    String command = currentValue
+        ? "turnOn"
+        : "turnOff"; // Define o comando com base no estado do toggle
+    ActuatorData actuatorData = ActuatorData(
+      actuatorId: actuator.id,
+      timestamp: DateTime.now(),
+      command: command,
+    );
+
+    // Converte o ActuatorData para JSON e chama a função publishMessage
+    await _espService.publishMessage(
+        "/esp32/${actuator.macAddress}/actuators_data/",
+        jsonEncode(actuatorData.toMap()));
   }
 
   @override
@@ -39,6 +65,7 @@ class _BooleanDeviceState extends State<BooleanDevice> {
                     setState(() {
                       currentValue = newValue;
                     });
+                    _publishCommand();
                   },
                 ),
                 Text(

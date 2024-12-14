@@ -55,21 +55,6 @@ class FirebaseService {
     }
   }
 
-  // GET /api/Esp/{id}
-  Future<EspModel> getEspById(String id) async {
-    try {
-      final response = await api.get('$baseUrl/$id');
-
-      if (response.statusCode == 200) {
-        return EspModel.fromMap(jsonDecode(response.data));
-      } else {
-        throw Exception('Failed to fetch esp by ID: ${response.statusCode}');
-      }
-    } catch (e) {
-      throw Exception('Failed to fetch esp by ID: $e');
-    }
-  }
-
   // DELETE /api/Esp/{id}
   Future<void> deleteEsp(String id) async {
     try {
@@ -84,22 +69,6 @@ class FirebaseService {
       }
     } catch (e) {
       throw Exception(e.toString());
-    }
-  }
-
-  // GET /api/Esp/{id}/sensors
-  Future<List<SensorModel>> getSensorsByEspId(String id) async {
-    try {
-      final response = await api.get('$baseUrl/$id/sensors');
-
-      if (response.statusCode == 200) {
-        List<dynamic> jsonResponse = jsonDecode(response.data);
-        return jsonResponse.map((json) => SensorModel.fromMap(json)).toList();
-      } else {
-        throw Exception('Failed to fetch sensors: ${response.statusCode}');
-      }
-    } catch (e) {
-      throw Exception('Failed to fetch sensors: $e');
     }
   }
 
@@ -120,42 +89,6 @@ class FirebaseService {
     }
   }
 
-  // GET /api/Sensor/{espId}
-  Future<List<SensorModel>> getSensors(String espId) async {
-    try {
-      final response = await api.get('$sensorUrl/$espId');
-
-      if (response.statusCode == 200) {
-        if (response.data is List) {
-          return (response.data as List)
-              .map((json) => SensorModel.fromMap(json))
-              .toList();
-        } else {
-          throw Exception('Invalid data returned for sensors');
-        }
-      } else {
-        throw Exception('Failed to fetch sensors: ${response.statusCode}');
-      }
-    } catch (e) {
-      throw Exception('Failed to fetch sensors: $e');
-    }
-  }
-
-  // GET /api/Sensor/{espId}/{id}
-  Future<SensorModel> getSensorById(String espId, String id) async {
-    try {
-      final response = await api.get('$sensorUrl/$espId/$id');
-
-      if (response.statusCode == 200) {
-        return SensorModel.fromMap(jsonDecode(response.data));
-      } else {
-        throw Exception('Failed to fetch sensor by ID: ${response.statusCode}');
-      }
-    } catch (e) {
-      throw Exception('Failed to fetch sensor by ID: $e');
-    }
-  }
-
   // DELETE /api/Sensor/{espId}/{id}
   Future<void> deleteSensor(String espId, String id) async {
     try {
@@ -168,22 +101,6 @@ class FirebaseService {
       }
     } catch (e) {
       throw Exception('Failed to delete sensor: $e');
-    }
-  }
-
-  // GET /api/Esp/{id}/actuators
-  Future<List<ActuatorModel>> getActuatorsByEspId(String id) async {
-    try {
-      final response = await api.get('$baseUrl/$id/actuators');
-
-      if (response.statusCode == 200) {
-        List<dynamic> jsonResponse = jsonDecode(response.data);
-        return jsonResponse.map((json) => ActuatorModel.fromMap(json)).toList();
-      } else {
-        throw Exception('Failed to fetch actuators: ${response.statusCode}');
-      }
-    } catch (e) {
-      throw Exception('Failed to fetch actuators: $e');
     }
   }
 

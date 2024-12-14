@@ -144,7 +144,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                           fontSize: 20,
                                         ),
                                       ),
-                                      actuator.getCorrespondingWidget(),
+                                      actuator.getCorrespondingWidget(actuator),
                                     ],
                                   ),
                                 ),
