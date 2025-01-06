@@ -1,8 +1,19 @@
-# Smart Home Control
-**Descrição Geral:**
-O **SmartHomeControl** é um aplicativo móvel projetado para controlar e monitorar sensores e atuadores conectados a um ESP32, utilizando comunicação via MQTT. O aplicativo oferece uma plataforma para gerenciamento completo da automação residencial, onde o usuário pode configurar dispositivos, monitorar o ambiente em tempo real, definir alertas e personalizar modos de operação, como "Férias", "Trabalho" e "Em Casa". A aplicação também inclui uma interface de login para garantir a segurança dos dados e das configurações.
+# Aplicativo móvel - Smart Home Control
 
-**Funcionalidades Principais:**
+##Visão Geral
+O SmartHomeControl é um aplicativo móvel projetado para controlar e monitorar sensores e atuadores conectados a um ESP32, utilizando comunicação via MQTT. O aplicativo oferece uma plataforma para gerenciamento completo da automação residencial, onde o usuário pode configurar dispositivos, monitorar o ambiente em tempo real, definir alertas e personalizar modos de operação, como "Férias", "Trabalho" e "Em Casa". A aplicação também inclui uma interface de login para garantir a segurança dos dados e das configurações.
+
+## 🌐 Ecossistema do Projeto
+
+Este repositório é parte de um sistema maior de automação residencial que inclui:
+
+- 📱 **Aplicativo Mobile** (Flutter): Este repositório
+- 🖥️ **Backend** (C#): [TISM_MQTT](https://github.com/Karosso/TISM_MQTT)
+- 🔥 **Firebase**: Armazenamento de dados e autenticação
+- 🔌 **ESP32** (C++): [smh_esp](https://github.com/Karosso/smh_esp)
+
+
+## Funcionalidades
 
 1. **Monitoramento de Sensores:**
     - **Exibição em Tempo Real:** Os dados coletados pelos sensores conectados ao ESP32 são exibidos em tempo real, permitindo ao usuário acompanhar o status de diferentes aspectos do ambiente.
@@ -26,7 +37,7 @@ O **SmartHomeControl** é um aplicativo móvel projetado para controlar e monito
     - **Visão Geral:** Exibição de uma visão geral dos dispositivos conectados e do status atual dos modos e alertas.
     - **Acesso Rápido:** Facilita a ativação/desativação de modos e a visualização de alertas ativos.
 
-**Exemplos de Sensores e Atuadores Utilizados:**
+## Exemplos de sensores e atuadores que poderão ser utilizados
 
 1. **Controle de Portão Eletrônico:**
     - **Sensor:** Sensor Magnético Reed Switch, que detecta se o portão está aberto ou fechado.
@@ -60,45 +71,100 @@ O **SmartHomeControl** é um aplicativo móvel projetado para controlar e monito
     - **Link "Esqueceu sua senha?":** Redireciona para a recuperação de senha.
     - **Botão "Registrar-se":** Direciona para a tela de registro de novos usuários.
 
+    ![Tela de login](image.png)
+
 ### **2. Tela Inicial (Dashboard)**
 
 - **Funcionalidades:**
     - **Cabeçalho:** Exibe o nome do aplicativo e ícone de perfil do usuário.
     - **Visão Geral dos Sensores:** Mostra o status em tempo real dos sensores, como temperatura, portão, presença, etc.
-    - **Botões de Modos Rápidos:** Acesso rápido para ativar modos como "Férias", "Trabalho", e "Em Casa".
-    - **Seção de Alertas Recentes:** Exibe os alertas ativos ou recentes.
 
-### **3. Tela de Sensores**
+    ![Tela inicial (Dashboard)](image-1.png)
+
+### **3. Tela de dispositivos**
 
 - **Funcionalidades:**
-    - **Lista de Sensores:** Exibe todos os sensores conectados, como reed switches, sensores de luminosidade, sensores de presença, etc.
+    - **Lista de Dispositivos:** Exibe todos os sensores e atuadores conectados, como reed switches, sensores de luminosidade, sensores de presença, relés para controle de lâmpadas, portões, etc., com opções para ligar/desligar.
     - **Botão "Adicionar Sensor":** Permite adicionar novos sensores ao sistema.
-    - **Gráficos e Histórico:** Ao clicar em um sensor, exibe dados históricos e gráficos.
-
-### **4. Tela de Controle de Atuadores**
-
-- **Funcionalidades:**
-    - **Lista de Atuadores:** Exibe atuadores como relés para controle de lâmpadas, portões, etc., com opções para ligar/desligar.
+    - **Botão "Remover Sensor":** Permite remover sensores ao sistema.
+    - **Pop-up "Confirmar remoção":** Confirmar remoção do sensor.
     - **Botão "Adicionar Atuador":** Permite adicionar novos atuadores ao sistema.
-    - **Ação Direta:** Interface para ativar/desativar dispositivos diretamente do app.
+    - **Botão "Remover Atuador":** Permite remover atuadores ao sistema.
+    - **Pop-up "Confirmar remoção":** Confirmar remoção do atuador.
 
-### **5. Tela de Modos de Operação**
+    ![Tela de dispositivos](image-2.png)
+    ![Adicionar sensor](image-3.png)
+    ![Lista de sensores](image-4.png)
+    ![Adicionar atuador](image-5.png)
+    ![Lista de atuadores](image-6.png)
+    ![Pop de confirmação de deleção](image-7.png)
 
-- **Funcionalidades:**
-    - **Lista de Modos:** Exibe modos como "Férias", "Trabalho", e "Em Casa" com opções para ativar, editar ou excluir.
-    - **Botão "Adicionar Modo":** Permite criar novos modos personalizados.
-    - **Configuração de Modos:** Interface para definir comportamentos automáticos e horários para cada modo.
-
-### **6. Tela de Configuração de Alertas**
-
-- **Funcionalidades:**
-    - **Lista de Alertas:** Mostra todos os alertas configurados para os sensores, como temperatura alta, presença detectada, etc.
-    - **Botão "Adicionar Alerta":** Permite criar novos alertas configurando limites de sensores e ações automáticas.
-    - **Notificações Push:** Configuração de notificações para alertas críticos.
-
-### **7. Tela de Gerenciamento de Dispositivos**
+### **4. Tela de Alertas**
 
 - **Funcionalidades:**
-    - **Lista de Dispositivos:** Exibe todos os dispositivos conectados (sensores e atuadores) com opções para configurar MQTT, renomear e adicionar novos.
-    - **Botão "Adicionar Dispositivo":** Interface para adicionar novos dispositivos ao sistema.
-    - **Configuração de MQTT:** Opção para configurar os parâmetros MQTT de cada dispositivo.
+    - **Lista de Alertas:** Exibe a lista de alertas configurados para determinados valores dos sensores.
+    - **Botão "Adicionar Alerta":** Permite adicionar novos alertas, um por sensor.
+
+    ![Lista de alertas](image-8.png)
+    ![Tela de adicionar alerta](image-9.png)
+
+### **5. Tela de Guia do Usuário**
+
+- **Funcionalidades:**
+    - **Informações:** Informações de uso do sistema, inclusão de sensores, atuadores e ESP32, e como utilizar o aplicativo
+
+    ![Guia do Usuário](image-10.png)
+
+### **6. Tela de Configurações**
+
+- **Funcionalidades:**
+    - **Lista de ESP32:** Mostra todos os ESP32 cadastrados.
+    - **Botão LogOut:** Permite o usuário fazer o log-out do sistema.
+    - **Botão "Adicionar ESP32":** Permite adicionar novos ESP32 ao sistema.
+    - **Botão "Remover ESP32":** Permite remover ESP32 do sistema.
+
+    ![Lista de ESP32](image-11.png)
+    ![Adicionar ESP32](image-12.png)
+    ![Confirmar remoção](image-13.png)
+
+## Como Contribuir
+
+1. Faça um Fork do projeto
+2. Crie uma Branch para sua Feature (`git checkout -b feature/AmazingFeature`)
+3. Faça o Commit de suas mudanças (`git commit -m 'Add some AmazingFeature'`)
+4. Faça o Push para a Branch (`git push origin feature/AmazingFeature`)
+5. Abra um Pull Request
+
+## Licença
+Este projeto está licenciado sob a Licença MIT - veja abaixo o texto completo:
+
+```
+MIT License
+
+Copyright (c) 2024 Oscar Dias (https://github.com/Karosso)
+Copyright (c) 2024 Bruno Reis (https://github.com/brunohreis)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
+
+## Suporte
+
+- Em caso de dúvidas ou problemas, abra uma issue no repositório do projeto
+- Para questões relacionadas ao aplicativo mobile, visite [smart_home_control](https://github.com/Karosso/smart_home_control)
+- Para questões relacionadas ao ESP32, visite [smh_esp](https://github.com/Karosso/smh_esp)
